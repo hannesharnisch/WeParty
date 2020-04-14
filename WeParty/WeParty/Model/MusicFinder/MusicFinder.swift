@@ -1,0 +1,69 @@
+//
+//  MusicFinder.swift
+//  PartyCollaborate
+//
+//  Created by Hannes Harnisch on 13.04.20.
+//  Copyright © 2020 hannes.harnisch. All rights reserved.
+//
+
+import Foundation
+import SwiftJWT
+import MediaPlayer
+
+class MusicFinder{
+    let appleMusicLib:AppleMusicLibrary?
+    init(fileName:String, kid:String, iss:String){
+        if let token = JWTGenerator.createJWTForAppleWith(fileName: fileName, kid: kid, iss: iss){
+            print(token)
+            self.appleMusicLib = AppleMusicLibrary(token: token)
+        }else{
+            appleMusicLib = nil
+        }
+    }
+    
+    func findSong(song:Song,callback:@escaping (Result<Song,MusicFinderError>) -> Void){
+        if appleMusicLib == nil{
+            callback(.failure(.noMusicLibrary))
+            return
+        }
+        appleMusicLib!.getSongFrom(song: song) { (result) in
+            switch result{
+            case .success(let item):
+                callback(.success(item))
+            case .failure(let err):
+                callback(.failure(err))
+            }
+        }
+    }
+}
+enum MusicFinderError:Error{
+    case noMusicLibrary
+    case noFound
+    case other
+}
+struct MyClaims: Claims {
+    let iss: String
+    let iat: Date
+    let exp: Date
+}
+class JWTGenerator{
+    static func createJWTForAppleWith(fileName:String, kid:String, iss:String) -> String?{
+        do{
+            let privateKeyPath =  Bundle.main.url(forResource: fileName, withExtension: nil)!
+            let attrs = try FileManager.default.attributesOfItem(atPath: privateKeyPath.path) as NSDictionary
+            let myHeader = Header(kid: kid)
+            let creationDate = attrs.fileCreationDate()!
+            let timediff = DateInterval.init(start:creationDate,duration:15777000)
+            let claims = MyClaims(iss: iss, iat: creationDate, exp: timediff.end)
+            print(attrs.fileCreationDate()!)
+            var myJWT = JWT(header: myHeader, claims: claims)
+            let privateKey: Data = try Data(contentsOf: privateKeyPath, options: .alwaysMapped)
+            let jwtSigner = JWTSigner.es256(privateKey: privateKey)
+            let signedJWT = try myJWT.sign(using: jwtSigner)
+            return signedJWT
+        }catch(let err){
+            print(err)
+            return nil
+        }
+    }
+}
