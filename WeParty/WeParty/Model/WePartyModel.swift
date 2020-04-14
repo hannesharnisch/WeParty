@@ -108,19 +108,19 @@ extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
             switch type{
                 case .complete:
                     self.state.queue = queue
-                _ = self.connection.send(data: MCSongContent.queue(songs: queue).toData()!, to: .all)
+                    _ = self.connection.send(data: MCSongContent.queue(songs: Array(queue[..<5])).toData()!, to: .all)
                 case .nextSong:
                     DispatchQueue.main.async {
                         let element = self.state.queue.remove(at: 0)
                         self.state.queue.append(element)
                     }
-                    _ = self.connection.send(data: MCSongContent.next.toData()!, to: .all)
+                    _ = self.connection.send(data: MCSongContent.next(song: queue[4]).toData()!, to: .all)
                 case .previousSong:
                     DispatchQueue.main.async {
                         let element = self.state.queue.removeLast()
                         self.state.queue.insert(element, at: 0)
                     }
-                    _ = self.connection.send(data: MCSongContent.previous.toData()!, to: .all)
+                    _ = self.connection.send(data: MCSongContent.previous(song: queue[0]).toData()!, to: .all)
             }
         }
         }
@@ -140,7 +140,7 @@ extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
                     self.state.playing = false
                 }
         }
-        let data = MCSongContent.playing(isPlaying: playing).toData()
+        let data = MCSongContent.isPlaying(playing: playing).toData()
             _ = self.connection.send(data: data!, to: .all)
         }
     }

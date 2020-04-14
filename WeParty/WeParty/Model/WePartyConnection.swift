@@ -107,7 +107,6 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             return;
         }
         if self.state.isServer{
-        
             DispatchQueue.main.async {
             switch content {
             case .song(let song):
@@ -119,22 +118,23 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             }
             }
         }else{
+            print(content)
             DispatchQueue.main.async {
             switch content {
             case .song(let song):
                 self.state.nowPlaying = song
-            case .playing(let playing):
+            case .isPlaying(let playing):
                 self.state.playing = playing
             case .queue(let songs):
                 self.state.queue = songs
             case .none:
                 return
-            case .next:
-                let element = self.state.queue.remove(at: 0)
-                self.state.queue.append(element)
-            case .previous:
-                let element = self.state.queue.removeLast()
-                self.state.queue.insert(element, at: 0)
+            case .next(let song):
+                self.state.queue.remove(at: 0)
+                self.state.queue.append(song)
+            case .previous(let song):
+                self.state.queue.removeLast()
+                self.state.queue.insert(song, at: 0)
                 }
             }
         }
@@ -145,8 +145,8 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
         connectionQueue.async {
         if self.state.nowPlaying != nil{
             _ = self.send(data: MCSongContent.song(song: self.state.nowPlaying!).toData()!, to: .withName(names: [from.displayName]))
-            _ = self.send(data: MCSongContent.playing(isPlaying: self.state.playing).toData()!, to: .withName(names: [from.displayName]))
-            _ = self.send(data: MCSongContent.queue(songs: self.state.queue).toData()!, to: .withName(names: [from.displayName]))
+            _ = self.send(data: MCSongContent.isPlaying(playing: self.state.playing).toData()!, to: .withName(names: [from.displayName]))
+            _ = self.send(data: MCSongContent.queue(songs: Array(self.state.queue[..<5])).toData()!, to: .withName(names: [from.displayName]))
         }
         }
     }
@@ -169,6 +169,57 @@ protocol PartyCollaborateMCConnectionDelegate {
     func songsRecieved(songs:[Song])
 }
 
+enum MCSongContent:Decodable{
+    case song(song:Song)
+    case queue(songs:[Song])
+    case next(song:Song)
+    case previous(song:Song)
+    case isPlaying(playing:Bool)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let value = try? container.decode(MCTupelObject.self){
+            switch  value.type {
+            case "song":
+                self = .song(song: value.songs[0])
+            case "queue":
+                self = .queue(songs: value.songs)
+            case "next":
+                self = .next(song: value.songs[0])
+            case "previous":
+                self = .previous(song: value.songs[0])
+            default:
+                throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
+            }
+        }else if let value = try? container.decode(Bool.self){
+            self = .isPlaying(playing: value)
+        }else{
+            throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
+        }
+    }
+    func toData() -> Data?{
+        switch self {
+        case .song(let song):
+            let tupel = MCTupelObject(type: "song", songs: [song])
+            return try! JSONEncoder().encode(tupel)
+        case .queue(let songs):
+            let tupel = MCTupelObject(type: "queue", songs: songs)
+            return try! JSONEncoder().encode(tupel)
+        case .isPlaying(let playing):
+            return try! JSONEncoder().encode(playing)
+        case .next(let song):
+            let tupel = MCTupelObject(type: "next", songs: [song])
+            return try! JSONEncoder().encode(tupel)
+        case .previous(let song):
+            let tupel = MCTupelObject(type: "previous", songs: [song])
+            return try! JSONEncoder().encode(tupel)
+        }
+    }
+}
+struct MCTupelObject:Decodable,Encodable{
+    var type:String
+    var songs:[Song]
+}
+/*
 enum MCSongContent:Decodable{
     case song(song:Song)
     case queue(songs:[Song])
@@ -210,4 +261,4 @@ enum MCSongContent:Decodable{
             return try! JSONEncoder().encode("previous")
         }
     }
-}
+}*/

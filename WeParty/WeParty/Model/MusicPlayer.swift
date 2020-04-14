@@ -47,7 +47,7 @@ class MusicPlayer{
         print("SENDing NOW")
         let index = musicPlayer.indexOfNowPlayingItem
         if delegate != nil {
-            if indexNowPlayingItem != nil && (indexNowPlayingItem ?? 0 < queue.count + 10){
+            if indexNowPlayingItem != nil && (indexNowPlayingItem ?? 0 < queue?.count ?? 0 + 10){
             if index == (indexNowPlayingItem! - 1){
                 self.delegate!.queueDidChange(queue: self.getCurrentQueue(), type: .previousSong)
             } else if index == (indexNowPlayingItem! + 1){
