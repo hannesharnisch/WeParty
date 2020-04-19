@@ -38,6 +38,7 @@ class MCHost:NSObject,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate{
     deinit {
         mcAdvertiserAssistent.stopAdvertisingPeer()
         self.mcSession.disconnect()
+        self.mcSession = nil
     }
     func start(){
         print("START HOST")
@@ -108,23 +109,23 @@ class MCHost:NSObject,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate{
         default:
             print("Dis \(peerID.displayName)")
             self.connections.removeAll { (connection) -> Bool in
-                return connection.peerId == peerID && connection.status != .keepAlive
+                return connection.peerId == peerID
             }
         }
     }
     
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         if let string = String(data: data, encoding: .utf8){
+            print(string)
             if string == "keepAlive"{
-                let con = self.connections.first { (connection) -> Bool in
+                /*let con = self.connections.first { (connection) -> Bool in
                     return connection.peerId == peerID
                 }
-                con!.status = .keepAlive
+                con!.status = .keepAlive*/
             }else if string == "dis"{
-                let con = self.connections.first { (con) -> Bool in
+                self.connections.removeAll { (con) -> Bool in
                     return con.peerId == peerID
                 }
-                con!.status = .disconnected
             }
         }
         
@@ -146,20 +147,12 @@ class MCHost:NSObject,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate{
     }
     
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+        print("INVITATION")
         if (self.invitations.firstIndex(where: { (discovered) -> Bool in
             return discovered.peerId == peerID
         }) == nil){
-            let con = self.connections.first { (connection) -> Bool in
-                return connection.peerId == peerID
-            }
-            if con == nil{
-                print(peerID.displayName)
-                self.invitations.append(DiscoveredPeer(peerId: peerID, invitationHandler: invitationHandler))
-            }else{
-                if con!.status == .keepAlive{
-                    invitationHandler(true, self.mcSession!)
-                }
-            }
+            print(peerID.displayName)
+            self.invitations.append(DiscoveredPeer(peerId: peerID, invitationHandler: invitationHandler))
         }
     }
 }

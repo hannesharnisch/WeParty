@@ -20,7 +20,20 @@ class MusicFinder{
             appleMusicLib = nil
         }
     }
-    
+    func getSearchResult(from text:String,callback:@escaping (Result<[Song],MusicFinderError>) -> Void){
+        if appleMusicLib == nil{
+            callback(.failure(.noMusicLibrary))
+            return
+        }
+        appleMusicLib!.getSongsFrom(text: text, limit: 15) { (result) in
+            switch result{
+                case .success(let items):
+                    callback(.success(items))
+                case .failure(let err):
+                    callback(.failure(err))
+            }
+        }
+    }
     func findSong(song:Song,callback:@escaping (Result<Song,MusicFinderError>) -> Void){
         if appleMusicLib == nil{
             callback(.failure(.noMusicLibrary))
@@ -28,8 +41,8 @@ class MusicFinder{
         }
         appleMusicLib!.getSongFrom(song: song) { (result) in
             switch result{
-            case .success(let item):
-                callback(.success(item))
+            case .success(let items):
+                callback(.success(items[0]))
             case .failure(let err):
                 callback(.failure(err))
             }
@@ -41,6 +54,7 @@ enum MusicFinderError:Error{
     case noFound
     case other
 }
+
 struct MyClaims: Claims {
     let iss: String
     let iat: Date

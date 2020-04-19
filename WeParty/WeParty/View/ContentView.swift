@@ -28,12 +28,26 @@ struct ContentView: View {
                     if self.state.connectedPeers.count != 0 || self.state.isServer{
                         SendingView(connectivity: self.model, selectMusik: self.$state.showMusicPicker).tabItem {
                             Image(systemName: "music.house")
-                            Text("Music")
+                            Text("Music").onAppear {
+                                if !self.state.isServer {
+                                    self.selectedView = 1
+                                }
+                            }
                         }.tag(1)
                     }
+                    Settings().tabItem {
+                        Image(systemName: "gear")
+                        Text("Settings").onAppear {
+                            if !self.state.isServer {
+                                self.selectedView = 1
+                            }
+                        }
+                    }.tag(2)
                 }.onAppear {
                     self.model = WePartyModel(state:self.state)
-                    self.state.requestCapabilities()
+                    AppSettings.current.requestMusicCapabilities(){result in
+                        
+                    }
                 }.alert(isPresented: $state.showAlertView) {
                     Alert(title: Text("Joining Request"), message: Text("\(self.state.discoveredPeers[0].displayName) wants to join the Party"), primaryButton: .default(Text("Connect")) {
                         self.model?.connection.connection(accept: true, peer: self.state.discoveredPeers[0])

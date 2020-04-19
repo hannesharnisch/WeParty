@@ -20,31 +20,33 @@ class AppleMusicLibrary{
         self.controller = SKCloudServiceController()
         self.urls = AppleMusicURLs(controller: controller)
         controller.requestUserToken(forDeveloperToken: developerToken) { (token, error) in
-            print(error)
+            print("ERROR REQUEST TOKEN: \(error.debugDescription)" ?? "TOKEN READY")
             guard error == nil && token != nil else{
                 return
             }
             self.userToken = token
         }
     }
-    func resolveRequestResult(data:Data)->Song?{
+    func resolveSongsRequest(data:Data) -> [Song]?{
         print(String(data:data,encoding:.utf8))
         
         do{
             guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: [String:[String:AnyObject]]] else{
                 return nil
             }
-            guard let dataParts = (json["results"]!["songs"]!["data"]! as? [AnyObject])![0] as? [String:AnyObject] else{
+            guard let dataParts = (json["results"]!["songs"]!["data"]! as? [AnyObject])! as? [[String:AnyObject]] else{
                 print("ERR")
                 return nil
             }
             print(dataParts)
-            guard let id = dataParts["id"] as? String else{
+            var songs:[Song] = []
+            for datapart in dataParts{
+            guard let id = datapart["id"] as? String else{
                 print("COULDNT resolve data")
                 return nil
             }
             //let artist = dataParts["artistName"] as? String
-            guard let attrs = dataParts["attributes"] as? [String:AnyObject] else{
+            guard let attrs = datapart["attributes"] as? [String:AnyObject] else{
                 print("COULDNT resolve attrs")
                 return nil
             }
@@ -66,13 +68,15 @@ class AppleMusicLibrary{
             url = url.replacingOccurrences(of: "{w}", with: "200")
             url = url.replacingOccurrences(of: "{h}", with: "200")
             print(url)
-            return Song(title: name, interpret: artist, id: id, image: URL(string: url)!)
+            songs.append(Song(title: name, interpret: artist, id: id, image: URL(string: url)!))
+            }
+            return songs
         }catch(let e){
             print(e)
             return nil
         }
     }
-    func makeGETRequest(url:URL,callback:@escaping (Result<Song,MusicFinderError>) -> Void){
+    func makeGETRequest(url:URL,limit:Int,callback:@escaping (Result<[Song],MusicFinderError>) -> Void){
         let session = URLSession.shared
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
@@ -91,22 +95,42 @@ class AppleMusicLibrary{
                 print("ERROR")
                 return
             }
-            guard let song = self.resolveRequestResult(data: data!) else{
-                callback(.failure(.other))
-                return
+            if limit == 1{
+                guard let songs = self.resolveSongsRequest(data: data!) else{
+                    callback(.failure(.other))
+                    return
+                }
+                callback(.success(songs))
+            }else{
+                guard let songs = self.resolveSongsRequest(data: data!) else{
+                    callback(.failure(.other))
+                    return
+                }
+                callback(.success(songs))
             }
-            callback(.success(song))
             }).resume()
     }
-    func getSongFrom(song:Song,callback:@escaping (Result<Song,MusicFinderError>) -> Void){
-        let url = urls.buildSearchURL(term: "\(song.title)  \(song.interpret)", types: "songs")
-        self.makeGETRequest(url: url){ result in
+    func getSongFrom(song:Song,callback:@escaping (Result<[Song],MusicFinderError>) -> Void){
+        guard let url = urls.buildSearchURL(limit: 1,term: "\(song.title)  \(song.interpret)", types: "songs") else{
+            callback(.failure(.noMusicLibrary))
+            return
+        }
+        self.makeGETRequest(url: url,limit: 1){ result in
+            callback(result)
+        }
+    }
+    func getSongsFrom(text:String,limit:Int,callback:@escaping (Result<[Song],MusicFinderError>) -> Void){
+        guard let url = urls.buildSearchURL(limit: limit,term: text, types: "songs") else{
+            callback(.failure(.noMusicLibrary))
+            return
+        }
+        self.makeGETRequest(url: url,limit: 10){ result in
             callback(result)
         }
     }
 }
 class AppleMusicURLs{
-    var searchURL = "https://api.music.apple.com/v1/catalog/<country>/search?term=<term>&limit=1&types=<types>"
+    var searchURL = "https://api.music.apple.com/v1/catalog/<country>/search?term=<term>&limit=<limit>&types=<types>"
     init(controller:SKCloudServiceController) {
         controller.requestStorefrontCountryCode { (code, error) in
             if error == nil{
@@ -116,9 +140,9 @@ class AppleMusicURLs{
             }
         }
     }
-    func buildSearchURL(term:String,types:String) ->URL{
+    func buildSearchURL(limit:Int,term:String,types:String) ->URL?{
         let updatedTerm = term.replacingOccurrences(of: " ", with: "+")
-        let url = searchURL.replacingOccurrences(of: "<term>", with: updatedTerm).replacingOccurrences(of: "<types>", with: types)
-        return URL(string: url)!
+        let url = searchURL.replacingOccurrences(of: "<term>", with: updatedTerm).replacingOccurrences(of: "<types>", with: types).replacingOccurrences(of: "<limit>", with: String(limit))
+        return URL(string: url)
     }
 }

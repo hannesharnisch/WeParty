@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 import MultipeerConnectivity
-import StoreKit
 
 class WePartyState:ObservableObject{
     @Published var isServer = false
@@ -20,30 +19,5 @@ class WePartyState:ObservableObject{
     @Published var nowPlaying:Song?
     @Published var showMusicPicker = false
     @Published var showAlertView = false
-    @Published var hasMusicInLib = false
-    @Published var hasAppleMusic = false
     @Published var currentHost:MCPeerID?
-    
-    func requestCapabilities(){
-            SKCloudServiceController().requestCapabilities { (capability:SKCloudServiceCapability, err:Error?) in
-                guard err == nil else {
-                    print("error in capability check is \(err!)")
-                    return
-                }
-
-                if capability.contains(SKCloudServiceCapability.musicCatalogPlayback) {
-                    DispatchQueue.main.async {
-                        self.hasMusicInLib = true
-                        print("HAS SONGS")
-                    }
-                }
-
-                if !capability.contains(SKCloudServiceCapability.musicCatalogSubscriptionEligible) {
-                    DispatchQueue.main.async {
-                        self.hasAppleMusic = true
-                        print("HAS APPLE MUSIC")
-                    }
-                }
-            }
-    }
 }

@@ -11,7 +11,7 @@ import MediaPlayer
 import MultipeerConnectivity
 import StoreKit
 
-class WePartyModel:NSObject, MPMediaPickerControllerDelegate, PartyCollaborateMCConnectionDelegate{
+class WePartyModel:NSObject, PartyCollaborateMCConnectionDelegate{
     private var state:WePartyState
     var connection:WePartyConnection
     var musicPlayer = MusicPlayer()
@@ -22,12 +22,71 @@ class WePartyModel:NSObject, MPMediaPickerControllerDelegate, PartyCollaborateMC
     init(state:WePartyState){
         self.state = state
         self.connection = WePartyConnection(state: state)
-        //self.connection = PartyCollaborateMCConnection(state: state)
         super.init()
         self.connection.delegate = self
         self.musicPlayer.delegate = self
     }
+    func songsRecieved(songs: [Song]) {
+        for song in songs{
+            if song.appleMusicSongID != nil{
+                self.addToQueue(songs: [song], from: false)
+            }else{
+                musicFinder.findSong(song: song) { (result) in
+                    switch result{
+                    case .success(let song):
+                        self.addToQueue(songs: [song],from:false)
+                    case .failure(let err):
+                        print(err)
+                    }
+                }
+            }
+        }
+    }
+    func addToQueue(songs:[Song],from host:Bool){
+        switch AppSettings.current.musicQueueingMode {
+        case .append:
+            self.musicPlayer.addSongsToQueue(songs: songs)
+        case .prepend:
+            self.musicPlayer.prependSongsToQueue(songs: songs)
+        case .appendHostPrepend:
+            if host{
+                self.musicPlayer.prependSongsToQueue(songs: songs)
+            }else{
+                self.musicPlayer.addSongsToQueue(songs: songs)
+            }
+        case .prependHostAppend:
+            if host{
+                self.musicPlayer.addSongsToQueue(songs: songs)
+            }else{
+                self.musicPlayer.prependSongsToQueue(songs: songs)
+            }
+        }
+    }
+    func addToQueue(songs:MPMediaItemCollection,from host:Bool){
+        switch AppSettings.current.musicQueueingMode {
+        case .append:
+            self.musicPlayer.addSongsToQueue(songs: songs)
+        case .prepend:
+            self.musicPlayer.prependSongsToQueue(songs: songs)
+        case .appendHostPrepend:
+            if host{
+                self.musicPlayer.prependSongsToQueue(songs: songs)
+            }else{
+                self.musicPlayer.addSongsToQueue(songs: songs)
+            }
+        case .prependHostAppend:
+            if host{
+                self.musicPlayer.addSongsToQueue(songs: songs)
+            }else{
+                self.musicPlayer.prependSongsToQueue(songs: songs)
+            }
+        }
+    }
     
+}
+
+//Song input
+extension WePartyModel:MPMediaPickerControllerDelegate,SearchForSongsDelegate{
     func mediaPicker(_ mediaPicker: MPMediaPickerController,
     didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         print("RECIEVED MEDIAITEM")
@@ -50,9 +109,12 @@ class WePartyModel:NSObject, MPMediaPickerControllerDelegate, PartyCollaborateMC
                     self.firstTimePlaying = false
                 }else{
                     DispatchQueue.main.async {
-                        self.musicPlayer.addSongsToQueue(songs: mediaItemCollection)
-                        self.state.queue.insert(contentsOf: songs, at: 0)
-                        self.connection.send(data: MCSongContent.queue(songs: self.state.queue).toData()!, to: .all)
+                        self.addToQueue(songs: mediaItemCollection, from: true)
+                        var queue = self.state.queue
+                        if queue.count > 4{
+                            queue = Array(queue[0..<5])
+                        }
+                        self.connection.send(data: MCSongContent.queue(songs: queue).toData()!, to: .all)
                     }
                 }
             }else{
@@ -60,30 +122,46 @@ class WePartyModel:NSObject, MPMediaPickerControllerDelegate, PartyCollaborateMC
             }
         }
     }
-    func didInput(song:Song){
-        DispatchQueue.main.async {
-            self.state.showMusicPicker = false
-        }
-        _ = self.connection.send(data: MCSongContent.queue(songs: [song]).toData()!, to: .host)
-    }
-    func songsRecieved(songs: [Song]) {
-        for song in songs{
-            if song.appleMusicSongID != nil{
-                musicPlayer.addSongsToQueue(songs: [song])
-            }else{
-                musicFinder.findSong(song: song) { (result) in
-                    switch result{
-                    case .success(let song):
-                        self.state.queue.insert(song, at: 0)
-                        self.musicPlayer.addSongsToQueue(songs: [song])
-                    case .failure(let err):
-                        print(err)
-                    }
-                }
+    func searchForSongs(with name: String,callback:@escaping ([Song]?) -> Void) {
+        var songs:[Song] = []
+        self.musicFinder.getSearchResult(from: name) { (result) in
+            switch result{
+            case .success(let songs):
+                callback(songs)
+            case .failure(let err):
+                callback(nil)
             }
         }
     }
-    
+    func didInput(songs:[Song]){
+        DispatchQueue.main.async {
+            self.state.showMusicPicker = false
+        }
+        if self.state.isServer{
+            if self.firstTimePlaying{
+                self.state.nowPlaying = Song(title: "Loading...", interpret: "")
+            }
+            songLoadingQueue.async {
+                if self.firstTimePlaying{
+                    self.musicPlayer.setSongs(queue: songs)
+                    self.musicPlayer.play()
+                    print("play")
+                    self.firstTimePlaying = false
+                }else{
+                    DispatchQueue.main.async {
+                        self.addToQueue(songs: songs, from: false)
+                        var queue = self.state.queue
+                        if queue.count > 4{
+                            queue = Array(queue[0..<5])
+                        }
+                        self.connection.send(data: MCSongContent.queue(songs: queue).toData()!, to: .all)
+                    }
+                }
+            }
+        }else{
+            _ = self.connection.send(data: MCSongContent.queue(songs: songs).toData()!, to: .host)
+        }
+    }
 }
 extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
     func nowPlayingChanged(nowPlaying: MPMediaItem?) {
@@ -108,19 +186,45 @@ extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
             switch type{
                 case .complete:
                     self.state.queue = queue
-                    _ = self.connection.send(data: MCSongContent.queue(songs: Array(queue[..<5])).toData()!, to: .all)
+                    var sendQueue = queue
+                    if sendQueue.count > 4{
+                        sendQueue = Array(sendQueue[0..<5])
+                    }
+                    _ = self.connection.send(data: MCSongContent.queue(songs: sendQueue).toData()!, to: .all)
                 case .nextSong:
                     DispatchQueue.main.async {
                         let element = self.state.queue.remove(at: 0)
                         self.state.queue.append(element)
                     }
-                    _ = self.connection.send(data: MCSongContent.next(song: queue[4]).toData()!, to: .all)
+                    var sendQueue = queue
+                    if sendQueue.count > 4{
+                        sendQueue = Array(sendQueue[0..<5])
+                    }
+                    _ = self.connection.send(data: MCSongContent.next(song: sendQueue.last!).toData()!, to: .all)
                 case .previousSong:
                     DispatchQueue.main.async {
                         let element = self.state.queue.removeLast()
                         self.state.queue.insert(element, at: 0)
                     }
-                    _ = self.connection.send(data: MCSongContent.previous(song: queue[0]).toData()!, to: .all)
+                    _ = self.connection.send(data: MCSongContent.previous(song: queue.first!).toData()!, to: .all)
+                case .songsPrepended:
+                    DispatchQueue.main.async {
+                        self.state.queue.insert(contentsOf: queue, at: 0)
+                        var sendQueue = self.state.queue
+                        if sendQueue.count > 4{
+                            sendQueue = Array(sendQueue[0..<5])
+                        }
+                        _ = self.connection.send(data: MCSongContent.queue(songs: sendQueue).toData()!, to: .all)
+                    }
+                case .songsAppended(let index):
+                    DispatchQueue.main.async {
+                        self.state.queue.insert(contentsOf: queue, at: index)
+                        var sendQueue = self.state.queue
+                        if sendQueue.count > 4{
+                            sendQueue = Array(sendQueue[0..<5])
+                        }
+                        _ = self.connection.send(data: MCSongContent.queue(songs: sendQueue).toData()!, to: .all)
+                    }
             }
         }
         }

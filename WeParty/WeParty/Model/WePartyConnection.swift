@@ -12,8 +12,8 @@ import MultipeerConnectivity
 class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDelegate{
     private var connectionQueue = DispatchQueue(label: "Connection")
     private var state:WePartyState
-    private var host = MCHost(SERVICE_TYPE: "party")
-    private var client = MCClient(SERVICE_TYPE: "party")
+    private var host = MCHost(SERVICE_TYPE: "WeParty-app")
+    private var client = MCClient(SERVICE_TYPE: "WeParty-app")
     var hasStarted = false
     var delegate:PartyCollaborateMCConnectionDelegate!
     
@@ -26,7 +26,9 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
     //ConnectivityEnabled
     func start(isServer: Bool) {
         connectionQueue.async {
-            self.state.requestCapabilities()
+            AppSettings.current.requestMusicCapabilities(){ result in
+                
+            }
             if isServer{
                 self.host.start()
             }else{
@@ -94,6 +96,11 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             if !self.state.isServer{
                 self.state.currentHost = self.client.currentHost
             }
+            if to.count == 0{
+                self.state.queue = []
+                self.state.nowPlaying = nil
+                self.state.playing = false
+            }
         }
     }
     
@@ -110,15 +117,16 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             DispatchQueue.main.async {
             switch content {
             case .song(let song):
+                print("SOng recieved")
                 self.delegate.songsRecieved(songs: [song])
             case .queue(let songs):
+                print("SOngs recieved")
                 self.delegate.songsRecieved(songs: songs)
             default:
                 return
             }
             }
         }else{
-            print(content)
             DispatchQueue.main.async {
             switch content {
             case .song(let song):
@@ -146,7 +154,11 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
         if self.state.nowPlaying != nil{
             _ = self.send(data: MCSongContent.song(song: self.state.nowPlaying!).toData()!, to: .withName(names: [from.displayName]))
             _ = self.send(data: MCSongContent.isPlaying(playing: self.state.playing).toData()!, to: .withName(names: [from.displayName]))
-            _ = self.send(data: MCSongContent.queue(songs: Array(self.state.queue[..<5])).toData()!, to: .withName(names: [from.displayName]))
+            var queue = self.state.queue
+            if queue.count > 4{
+                queue = Array(queue[..<5])
+            }
+            _ = self.send(data: MCSongContent.queue(songs: queue).toData()!, to: .withName(names: [from.displayName]))
         }
         }
     }
@@ -219,46 +231,3 @@ struct MCTupelObject:Decodable,Encodable{
     var type:String
     var songs:[Song]
 }
-/*
-enum MCSongContent:Decodable{
-    case song(song:Song)
-    case queue(songs:[Song])
-    case playing(isPlaying:Bool)
-    case next
-    case previous
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let value = try? container.decode(Bool.self){
-            self = .playing(isPlaying: value)
-        } else if let value = try? container.decode(Song.self){
-            self = .song(song: value)
-        } else if let value = try? container.decode([Song].self){
-            self = .queue(songs: value)
-        } else if let value = try? container.decode(String.self){
-            if value == "next"{
-                self = .next
-            }else if value == "previous"{
-                self = .previous
-            }else{
-                throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
-            }
-        } else{
-            throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
-        }
-    }
-    func toData() -> Data?{
-        switch self {
-        case .song(let song):
-            return try! JSONEncoder().encode(song)
-        case .queue(let songs):
-            return try! JSONEncoder().encode(songs)
-        case .playing(let isPlaying):
-            return try! JSONEncoder().encode(isPlaying)
-        case .next:
-            return try! JSONEncoder().encode("next")
-        case .previous:
-            return try! JSONEncoder().encode("previous")
-        }
-    }
-}*/

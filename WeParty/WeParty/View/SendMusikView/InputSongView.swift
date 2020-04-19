@@ -15,7 +15,7 @@ struct InputSongView: View {
     @State var interpret = ""
     var body: some View {
         VStack{
-            Image(systemName: "chevron.compact.down").resizable().scaledToFit().frame(width:50).padding(.horizontal, 5).onTapGesture {
+            Image(systemName: "minus").resizable().foregroundColor(Color(UIColor.lightGray)).frame(width:40,height:6).padding(.horizontal, 5).onTapGesture {
                 self.shown = false
             }
             Text("Send a Song!").font(.largeTitle).padding()
@@ -30,7 +30,7 @@ struct InputSongView: View {
                 .background(Color.gray).cornerRadius(5.0)
             Spacer()
             Button(action:{
-                self.connectivity?.didInput(song: Song(title: self.musicTitle, interpret: self.interpret))
+                self.connectivity?.didInput(songs: [Song(title: self.musicTitle, interpret: self.interpret)])
             }){
                 Text("Send").font(.headline).foregroundColor(.white)
             }.padding(.vertical, 10.0).background(Color.blue).cornerRadius(4.0).padding(.horizontal, 50)

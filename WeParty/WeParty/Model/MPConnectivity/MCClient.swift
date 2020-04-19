@@ -36,13 +36,13 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
     init(SERVICE_TYPE:String){
         self.SERVICE_TYPE = SERVICE_TYPE
         super.init()
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        //let notificationCenter = NotificationCenter.default
+        //notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
     }
     @objc func appMovedToBackground(){
         print("KEEP ALIVE")
         if self.isRunning{
-            self.send(data: "keepAlive".data(using: .utf8)!, to: .host)
+            _ = self.send(data: "keepAlive".data(using: .utf8)!, to: .host)
             let con = self.connections.first { (con) -> Bool in
                 return con.peerId == self.currentHost
             }
@@ -53,7 +53,10 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
     }
     deinit {
         print("DEINIT")
-        self.send(data: "dis".data(using: .utf8)!, to: .host)
+        if self.currentHost != nil{
+            _ = self.send(data: "dis".data(using: .utf8)!, to: .host)
+        }
+        self.stop()
     }
     func start(){
         isRunning = true
@@ -69,7 +72,9 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
         print("STOPPING CLIENT")
         mcBrowser.stopBrowsingForPeers()
         self.mcSession.disconnect()
+        self.mcSession = nil
         connections = []
+        self.currentHost = nil
         discoveredPeers = []
         currentHost = nil
     }
@@ -90,7 +95,7 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
             return discovered.peerId == to
         }
         if index != nil{
-            self.mcBrowser.invitePeer(to, to: mcSession, withContext: nil, timeout: 99999)
+            self.mcBrowser.invitePeer(to, to: mcSession, withContext: nil, timeout: 0)
             self.currentHost = to
             return true
         }else{
@@ -115,6 +120,7 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         switch state {
         case .connected:
+            print("Connected")
             self.connections.append(MCConnection(peerId: peerID, mcSession: self.mcSession))
             self.discoveredPeers.removeAll { (discovered) -> Bool in
                 return discovered.peerId == peerID
@@ -163,7 +169,8 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
         }
         if index == nil{
                 self.discoveredPeers.append(DiscoveredPeer(peerId: peerID))
-                print("ADDED PEER")
+            print("ADDED PEER \(peerID.displayName)")
+            print(DiscoveredPeer.getPeers(peers: discoveredPeers).description)
         }
     }
     

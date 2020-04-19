@@ -81,6 +81,11 @@
 		D13D0E1024451F970035A0B2 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = D13D0E0F24451F970035A0B2 /* SwiftJWT */; };
 		D13D0E12244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 in Resources */ = {isa = PBXBuildFile; fileRef = D13D0E11244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 */; };
 		D13D0E142445BB170035A0B2 /* AskingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13D0E132445BB170035A0B2 /* AskingView.swift */; };
+		D1909060244B06F600C57B0B /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190905F244B06F600C57B0B /* TableView.swift */; };
+		D1909062244B0F8300C57B0B /* SearchForSongView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909061244B0F8300C57B0B /* SearchForSongView.swift */; };
+		D1909064244B10F800C57B0B /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909063244B10F800C57B0B /* SearchBar.swift */; };
+		D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909067244B8B2800C57B0B /* AppSettings.swift */; };
+		D190906B244B99FC00C57B0B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190906A244B99FC00C57B0B /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +143,12 @@
 		D13D0E0724451F2A0035A0B2 /* MusicFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicFinder.swift; sourceTree = "<group>"; };
 		D13D0E11244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AuthKey_QH8XRCS4JS.p8; sourceTree = "<group>"; };
 		D13D0E132445BB170035A0B2 /* AskingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskingView.swift; sourceTree = "<group>"; };
+		D190905F244B06F600C57B0B /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
+		D1909061244B0F8300C57B0B /* SearchForSongView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchForSongView.swift; sourceTree = "<group>"; };
+		D1909063244B10F800C57B0B /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		D1909067244B8B2800C57B0B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		D1909069244B8CB800C57B0B /* WeParty.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeParty.entitlements; sourceTree = "<group>"; };
+		D190906A244B99FC00C57B0B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +201,7 @@
 		D13D0D812444CC630035A0B2 /* WeParty */ = {
 			isa = PBXGroup;
 			children = (
+				D1909069244B8CB800C57B0B /* WeParty.entitlements */,
 				D13D0DBD2444CEC40035A0B2 /* Model */,
 				D13D0DB62444CC9C0035A0B2 /* View */,
 				D13D0D822444CC630035A0B2 /* AppDelegate.swift */,
@@ -231,6 +243,7 @@
 		D13D0DB62444CC9C0035A0B2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D190906C244B9A4A00C57B0B /* Settings */,
 				D13D0DEA24450E380035A0B2 /* NowPlayingView */,
 				D13D0DDD24450CC00035A0B2 /* SendMusikView */,
 				D13D0DDB244508060035A0B2 /* ConnectionView */,
@@ -250,6 +263,7 @@
 				D13D0DD32444DE7D0035A0B2 /* WePartyConnection.swift */,
 				D13D0DD72444FEE10035A0B2 /* Song.swift */,
 				D13D0E03244518440035A0B2 /* MusicPlayer.swift */,
+				D1909067244B8B2800C57B0B /* AppSettings.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -280,6 +294,9 @@
 				D13D0DDF24450CC00035A0B2 /* SelectMusikView.swift */,
 				D13D0DE024450CC00035A0B2 /* SendingView.swift */,
 				D13D0DFF244513D70035A0B2 /* QueueView.swift */,
+				D190905F244B06F600C57B0B /* TableView.swift */,
+				D1909061244B0F8300C57B0B /* SearchForSongView.swift */,
+				D1909063244B10F800C57B0B /* SearchBar.swift */,
 			);
 			path = SendMusikView;
 			sourceTree = "<group>";
@@ -303,6 +320,14 @@
 				D13D0E0724451F2A0035A0B2 /* MusicFinder.swift */,
 			);
 			path = MusicFinder;
+			sourceTree = "<group>";
+		};
+		D190906C244B9A4A00C57B0B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D190906A244B99FC00C57B0B /* Settings.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -455,6 +480,7 @@
 				D13D0DE724450CC00035A0B2 /* SendingView.swift in Sources */,
 				D13D0DBA2444CD0F0035A0B2 /* ConnectionView.swift in Sources */,
 				D13D0D832444CC630035A0B2 /* AppDelegate.swift in Sources */,
+				D1909062244B0F8300C57B0B /* SearchForSongView.swift in Sources */,
 				D13D0DF924450E380035A0B2 /* MusikSlider.swift in Sources */,
 				D13D0DC32444D9640035A0B2 /* WePartyModel.swift in Sources */,
 				D13D0DF624450E380035A0B2 /* DraggableSmallRepresentationView.swift in Sources */,
@@ -463,7 +489,11 @@
 				D13D0E00244513D70035A0B2 /* QueueView.swift in Sources */,
 				D13D0D852444CC630035A0B2 /* SceneDelegate.swift in Sources */,
 				D13D0DFC24450E380035A0B2 /* NowPlayingView.swift in Sources */,
+				D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */,
+				D1909064244B10F800C57B0B /* SearchBar.swift in Sources */,
 				D13D0DCA2444DD890035A0B2 /* MCHost.swift in Sources */,
+				D190906B244B99FC00C57B0B /* Settings.swift in Sources */,
+				D1909060244B06F600C57B0B /* TableView.swift in Sources */,
 				D13D0DBF2444CED80035A0B2 /* WePartyState.swift in Sources */,
 				D13D0DD02444DD890035A0B2 /* MCClient.swift in Sources */,
 				D13D0D872444CC630035A0B2 /* ContentView.swift in Sources */,
@@ -674,6 +704,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = WeParty/WeParty.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"WeParty/Preview Content\"";
 				DEVELOPMENT_TEAM = AVT8X3595T;
@@ -695,6 +726,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = WeParty/WeParty.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"WeParty/Preview Content\"";
 				DEVELOPMENT_TEAM = AVT8X3595T;

@@ -23,7 +23,7 @@ struct ConnectionView: View {
                 }else{
                     ConnectingView(discoveredPeers: self.$state.discoveredPeers, connectedPeers: self.$state.connectedPeers, isServer: self.$state.isServer, currentHost: self.$state.currentHost,connectivity: model)
                 }
-            }.navigationBarTitle(Text("Connection"))
+            }.navigationBarTitle(Text("Connection \(wasIsServerSet ? self.state.isServer ? "Partyhost" : "Join" : "")"))
         }
     }
 }
@@ -40,7 +40,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
             VStack(alignment: .leading){
             HStack{
                 ActivityIndicator(isAnimating: .constant(true), style: .medium)
-                Text("Searching for People").font(.headline)
+                Text("Searching for \(self.isServer ? "People" : "Party-hosts")").font(.headline)
             }.padding(.horizontal).padding(.bottom, 4).padding(.top)
             HStack{
                 Text("Me: ")
@@ -54,7 +54,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                 Divider()
             }
             if self.connectedPeers.count != 0{
-                Text("Connected").font(.caption).padding(.horizontal)
+                Text("Connected People").font(.caption).padding(.horizontal)
                 ForEach(self.connectedPeers, id:\.self){ peer in
                     VStack(alignment:.leading){
                         Divider()
@@ -75,7 +75,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                 if self.discoveredPeers.count != 0{
                 if !self.isServer{
                     Divider()
-                    Text("Discovered").font(.caption).padding(.horizontal)
+                    Text("Discovered \(self.isServer ? "People" : "Party-hosts")").font(.caption).padding(.horizontal)
                     ForEach(self.discoveredPeers, id:\.self){ peer in
                         VStack(alignment:.leading){
                             Divider()

@@ -12,7 +12,10 @@ import MediaPlayer
 class MusicPlayer{
     private var musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var delegate:MusicPlayerDelegate?
-    private var queue:[Song]!
+    private var queue:[Song]!{didSet{
+        print("QUEUE:  \(self.queue)")
+        }
+    }
     private var indexNowPlayingItem:Int?
     
     init(){
@@ -31,17 +34,80 @@ class MusicPlayer{
         }
         musicPlayer.prepareToPlay()
     }
+    func setSongs(queue:[Song]){
+        var ids = [String]()
+        for song in queue{
+            if song.appleMusicSongID != nil{
+                ids.append(song.appleMusicSongID!)
+            }
+        }
+        self.queue = queue
+        musicPlayer.setQueue(with: MPMusicPlayerStoreQueueDescriptor(storeIDs: ids))
+        print("SET SONGS")
+        musicPlayer.prepareToPlay()
+    }
     func addSongsToQueue(songs: MPMediaItemCollection){
         let descriptor = MPMusicPlayerMediaItemQueueDescriptor(itemCollection: songs)
-        musicPlayer.prepend(descriptor)
+        musicPlayer.append(descriptor)
+        var songsson = [Song]()
+        for song in songs.items{
+            songsson.append(Song(song: song)!)
+        }
+        self.queue.append(contentsOf: songsson)
+        self.delegate?.queueDidChange(queue: songsson, type: .songsAppended(afterIndex: ((queue.count-2) - (indexNowPlayingItem ?? 0))))
     }
     func addSongsToQueue(songs:[Song]){
         var ids = [String]()
         for song in songs{
             ids.append(song.appleMusicSongID!)
         }
+        self.queue.append(contentsOf: songs)
+        print(queue)
         let descriptor = MPMusicPlayerStoreQueueDescriptor(storeIDs: ids)
+        musicPlayer.append(descriptor)
+        self.delegate?.queueDidChange(queue: songs, type: .songsAppended(afterIndex: ((queue.count-2) - (indexNowPlayingItem ?? 0))))
+    }
+    func prependSongsToQueue(songs: MPMediaItemCollection){
+        let descriptor = MPMusicPlayerMediaItemQueueDescriptor(itemCollection: songs)
         musicPlayer.prepend(descriptor)
+        var songsson = [Song]()
+        for song in songs.items{
+            songsson.append(Song(song: song)!)
+        }
+        self.queue = insertAtNowPlayingItem(queue: queue, songs: songsson)
+        self.delegate?.queueDidChange(queue: songsson, type: .songsPrepended)
+    }
+    func prependSongsToQueue(songs:[Song]){
+        self.queue = insertAtNowPlayingItem(queue: queue, songs: songs)
+        musicPlayer.prepend(self.queueDescriptorFrom(songs: songs))
+        self.delegate?.queueDidChange(queue: songs, type: .songsPrepended)
+    }
+    private func insertAtNowPlayingItem(queue:[Song],songs:[Song])->[Song]{
+        let index = musicPlayer.indexOfNowPlayingItem
+        var newQueue = [Song]()
+        for i in (0...index){
+            newQueue.append(queue[i])
+        }
+        newQueue.append(contentsOf: songs)
+        if index != queue.count{
+            for a in (index + 1)..<queue.count{
+                newQueue.append(queue[a])
+            }
+        }
+        return newQueue
+    }
+    func removeSongFromQueue(song:Song){
+        self.queue.removeAll { (song1) -> Bool in
+            return song1 == song
+        }
+        musicPlayer.setQueue(with: self.queueDescriptorFrom(songs: self.queue!))
+    }
+    func queueDescriptorFrom(songs:[Song])->MPMusicPlayerStoreQueueDescriptor{
+        var ids = [String]()
+        for song in songs{
+            ids.append(song.appleMusicSongID!)
+        }
+        return MPMusicPlayerStoreQueueDescriptor(storeIDs: ids)
     }
     @objc private func sendNowPlayingChange(_ notification: Notification){
         print("SENDing NOW")
@@ -64,11 +130,17 @@ class MusicPlayer{
         let items = queue!
         let index = musicPlayer.indexOfNowPlayingItem
         var queue = [Song]()
-        for i in ((index + 1)..<items.count){
-            queue.append(items[i])
-        }
-        for a in 0...index{
-            queue.append(items[a])
+        if items.count == 1{
+            queue.append(items[0])
+        }else{
+            if index < items.count - 1 {
+                for i in (index + 1..<items.count){
+                    queue.append(items[i])
+                }
+            }
+            for a in 0...index{
+                queue.append(items[a])
+            }
         }
         return queue
     }
@@ -108,4 +180,6 @@ enum QueueChangeType{
     case complete
     case nextSong
     case previousSong
+    case songsPrepended
+    case songsAppended(afterIndex:Int)
 }

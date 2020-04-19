@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 import MediaPlayer
 
-class Song:Codable,Equatable{
+class Song:Codable,Identifiable{
     var id = UUID()
     var title:String
     var interpret:String
@@ -28,7 +28,7 @@ class Song:Codable,Equatable{
     }
     init?(song:MPMediaItem){
         self.title = song.title ?? ""
-        self.interpret = song.albumArtist ?? ""
+        self.interpret = song.artist ?? ""
         self.appleMusicSongID = String(song.persistentID)
         self.image = song.artwork?.image(at: CGSize(width: 150, height: 150))?.pngData()
         if title == ""{
@@ -52,9 +52,6 @@ class Song:Codable,Equatable{
         self.title = title
         self.interpret = interpret
     }
-    static func == (lhs: Song, rhs: Song) -> Bool {
-        return lhs.title == rhs.title && lhs.interpret == rhs.interpret
-    }
 }
 
 class ImageLoader{
@@ -72,4 +69,16 @@ class ImageLoader{
             callback(data!)
         }.resume()
     }
+}
+extension Song:Hashable,Equatable{
+    static func == (lhs: Song, rhs: Song) -> Bool {
+        return lhs.title == rhs.title && lhs.interpret == rhs.interpret && (rhs.appleMusicSongID ?? "1") == (lhs.appleMusicSongID ?? "0")
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(interpret)
+        hasher.combine(id)
+        hasher.combine(appleMusicSongID)
+    }
+
 }

@@ -19,6 +19,7 @@ struct AskingView: View{
             Spacer()
             HStack{
             Spacer()
+                VStack(alignment:.center){
             Button(action: {
                 self.isServer = true
                 self.wasIsServerSet.toggle()
@@ -26,8 +27,9 @@ struct AskingView: View{
             }){
                 Text("Start a Party").foregroundColor(.white)
                 .frame(width: UIScreen.main.bounds.width/2 - 40, height: 80, alignment: .center)
-                .background(RoundedRectangle(cornerRadius: 10).fill().foregroundColor(.blue))
+                    .background(RoundedRectangle(cornerRadius: 10).fill().foregroundColor(.blue))
             }
+                }
             .compositingGroup()
             .shadow(color: .black, radius: 3)
             Spacer()
