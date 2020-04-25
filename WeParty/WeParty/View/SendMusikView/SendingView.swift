@@ -27,7 +27,9 @@ struct SendingView: View {
                     }
                 }
                 QueueView(connectivity:connectivity).sheet(isPresented: self.$selectMusik, onDismiss: {
-    
+                    DispatchQueue.main.async {
+                        self.state.closedMusicPicker()
+                    }
                 }) {
                     VStack{
                         if AppSettings.current.hasMusicInLib {

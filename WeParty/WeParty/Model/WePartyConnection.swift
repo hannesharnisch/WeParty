@@ -85,7 +85,7 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
         DispatchQueue.main.async {
             self.state.discoveredPeers = to
             if to.count > 0{
-                self.state.showAlertView = true
+                self.state.showAlert()
             }
         }
     }
@@ -95,11 +95,11 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             self.state.connectedPeers = to
             if !self.state.isServer{
                 self.state.currentHost = self.client.currentHost
-            }
-            if to.count == 0{
-                self.state.queue = []
-                self.state.nowPlaying = nil
-                self.state.playing = false
+                if to.count == 0 || self.client.currentHost == nil{
+                    self.state.queue = []
+                    self.state.nowPlaying = nil
+                    self.state.playing = false
+                }
             }
         }
     }
@@ -137,6 +137,7 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             case .isPlaying(let playing):
                 self.state.playing = playing
                 if playing{
+                    self.state.stopIncrementingCurrent()
                     self.state.startIncrementingCurrent()
                 }else{
                     self.state.stopIncrementingCurrent()

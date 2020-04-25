@@ -48,14 +48,14 @@ struct ContentView: View {
                     AppSettings.current.requestMusicCapabilities(){result in
                         
                     }
-                }.alert(isPresented: $state.showAlertView) {
-                    Alert(title: Text("Joining Request"), message: Text("\(self.state.discoveredPeers[0].displayName) wants to join the Party"), primaryButton: .default(Text(NSLocalizedString("connect", comment:"connect word"))) {
-                        self.model?.connection.connection(accept: true, peer: self.state.discoveredPeers[0])
-                        }, secondaryButton: .cancel(){
-                            self.model?.connection.connection(accept: false, peer: self.state.discoveredPeers[0])
-                        })
                 }
             }
+        }.alert(isPresented: $state.showAlertView) {
+            Alert(title: Text("Joining Request"), message: Text("\(self.state.discoveredPeers[0].displayName) wants to join the Party"), primaryButton: .default(Text(NSLocalizedString("connect", comment:"connect word"))) {
+                self.model?.connection.connection(accept: true, peer: self.state.discoveredPeers[0])
+                }, secondaryButton: .cancel(){
+                    self.model?.connection.connection(accept: false, peer: self.state.discoveredPeers[0])
+                })
         }
     }
 }

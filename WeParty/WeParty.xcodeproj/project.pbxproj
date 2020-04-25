@@ -83,6 +83,8 @@
 		D13D0E142445BB170035A0B2 /* AskingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13D0E132445BB170035A0B2 /* AskingView.swift */; };
 		D14B1D71245201E600D90EAA /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D70245201E600D90EAA /* HelpView.swift */; };
 		D14B1D742452BC3B00D90EAA /* MPVolumeViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D732452BC3B00D90EAA /* MPVolumeViewRepresentable.swift */; };
+		D14B1D772454948100D90EAA /* AskingViewHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D762454948100D90EAA /* AskingViewHelp.swift */; };
+		D14B1D792454949D00D90EAA /* ConnectionViewHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D782454949D00D90EAA /* ConnectionViewHelp.swift */; };
 		D1909060244B06F600C57B0B /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190905F244B06F600C57B0B /* TableView.swift */; };
 		D1909062244B0F8300C57B0B /* SearchForSongView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909061244B0F8300C57B0B /* SearchForSongView.swift */; };
 		D1909064244B10F800C57B0B /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909063244B10F800C57B0B /* SearchBar.swift */; };
@@ -148,6 +150,8 @@
 		D13D0E132445BB170035A0B2 /* AskingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskingView.swift; sourceTree = "<group>"; };
 		D14B1D70245201E600D90EAA /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		D14B1D732452BC3B00D90EAA /* MPVolumeViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVolumeViewRepresentable.swift; sourceTree = "<group>"; };
+		D14B1D762454948100D90EAA /* AskingViewHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskingViewHelp.swift; sourceTree = "<group>"; };
+		D14B1D782454949D00D90EAA /* ConnectionViewHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewHelp.swift; sourceTree = "<group>"; };
 		D190905F244B06F600C57B0B /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
 		D1909061244B0F8300C57B0B /* SearchForSongView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchForSongView.swift; sourceTree = "<group>"; };
 		D1909063244B10F800C57B0B /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
@@ -336,9 +340,19 @@
 		D14B1D72245201ED00D90EAA /* Help */ = {
 			isa = PBXGroup;
 			children = (
+				D14B1D752454946700D90EAA /* HelpViews */,
 				D14B1D70245201E600D90EAA /* HelpView.swift */,
 			);
 			path = Help;
+			sourceTree = "<group>";
+		};
+		D14B1D752454946700D90EAA /* HelpViews */ = {
+			isa = PBXGroup;
+			children = (
+				D14B1D762454948100D90EAA /* AskingViewHelp.swift */,
+				D14B1D782454949D00D90EAA /* ConnectionViewHelp.swift */,
+			);
+			path = HelpViews;
 			sourceTree = "<group>";
 		};
 		D190906C244B9A4A00C57B0B /* Settings */ = {
@@ -493,6 +507,7 @@
 				D13D0DD82444FEE10035A0B2 /* Song.swift in Sources */,
 				D13D0DE124450CC00035A0B2 /* InputSongView.swift in Sources */,
 				D13D0DF324450E380035A0B2 /* SongImageView.swift in Sources */,
+				D14B1D772454948100D90EAA /* AskingViewHelp.swift in Sources */,
 				D13D0E0824451F2A0035A0B2 /* AppleMusicLibrary.swift in Sources */,
 				D14B1D71245201E600D90EAA /* HelpView.swift in Sources */,
 				D13D0E0B24451F2A0035A0B2 /* MusicFinder.swift in Sources */,
@@ -519,6 +534,7 @@
 				D1909060244B06F600C57B0B /* TableView.swift in Sources */,
 				D13D0DBF2444CED80035A0B2 /* WePartyState.swift in Sources */,
 				D13D0DD02444DD890035A0B2 /* MCClient.swift in Sources */,
+				D14B1D792454949D00D90EAA /* ConnectionViewHelp.swift in Sources */,
 				D13D0D872444CC630035A0B2 /* ContentView.swift in Sources */,
 				D13D0DF024450E380035A0B2 /* MusicControl.swift in Sources */,
 			);

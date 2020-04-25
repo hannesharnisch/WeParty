@@ -10,8 +10,8 @@ import SwiftUI
 import MultipeerConnectivity
 
 struct HelpView: View {
+    @State var selected:Int
     var model = WePartyModel(state: WePartyState())
-    @State var selected = 0
     var body: some View {
             ZStack{
                 if selected == 0{
@@ -19,7 +19,7 @@ struct HelpView: View {
                     
                     }).padding(.vertical,30)
                 }else if selected == 1{
-                    ConnectingView(discoveredPeers: .constant([MCPeerID(displayName: "Max Mustermann"),MCPeerID(displayName: "Hallo Hammer")]), connectedPeers: .constant([MCPeerID(displayName: "Iphone from Max")]), isServer: .constant(false), currentHost: .constant(MCPeerID(displayName: "Iphone from Muster")) ,connectivity: model.connection)
+                    ConnectingView(discoveredPeers: .constant([MCPeerID(displayName: "Max Mustermann"),MCPeerID(displayName: "Hallo Hammer")]), connectedPeers: .constant([MCPeerID(displayName: "Iphone from Max")]), isServer: .constant(false), currentHost: .constant(MCPeerID(displayName: "Iphone from Muster")) ,connectivity: model.connection).padding(.vertical,30)
                 }else{
                     SendingView(connectivity: self.model, selectMusik: .constant(false)).padding(.vertical,30)
                 }
@@ -30,6 +30,7 @@ struct HelpView: View {
                     }else if selected == 1{
                         ConnectionViewHelp()
                     }
+                    Spacer()
                     HStack{
                         if selected != 0{
                             Button(action:{
@@ -50,34 +51,9 @@ struct HelpView: View {
     }
 }
 
-struct AskingViewHelp: View {
-    var body: some View {
-        VStack{
-            Text(" 1. First Select if you want to join or start a party").padding().multilineTextAlignment(.center)
-            Spacer()
-            Text("Start a party if you want to be the one who plays the music").font(.caption).padding().multilineTextAlignment(.center)
-            Text("Join a party if you want to send music to someone who plays music with WeParty").font(.caption).multilineTextAlignment(.center).padding()
-            Spacer()
-            Spacer()
-        }
-    }
-}
-struct ConnectionViewHelp: View {
-    var body: some View {
-        VStack{
-            Text(" 1. First Select if you want to join or start a party").padding().multilineTextAlignment(.center)
-            Spacer()
-            Text("Start a party if you want to be the one who plays the music").font(.caption).padding().multilineTextAlignment(.center)
-            Text("Join a party if you want to send music to someone who plays music with WeParty").font(.caption).multilineTextAlignment(.center).padding()
-            Spacer()
-            Spacer()
-        }
-    }
-}
-
 
 struct HelpView_Previews: PreviewProvider {
     static var previews: some View {
-        HelpView()
+        HelpView(selected:0)
     }
 }

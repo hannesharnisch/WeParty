@@ -58,7 +58,7 @@ struct AskingView: View{
             }
         }.padding().sheet(isPresented: self.$showHelp,onDismiss:{
         }){
-           HelpView()
+            HelpView(selected: 0)
         }
     }
 }
