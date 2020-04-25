@@ -15,7 +15,7 @@ class Song:Codable,Identifiable{
     var title:String
     var interpret:String
     var appleMusicSongID:String?
-    var spotifyURL:URL?
+    var length:CGFloat?
     var image:Data?
     var imageURL:URL?
     
@@ -29,8 +29,9 @@ class Song:Codable,Identifiable{
     init?(song:MPMediaItem){
         self.title = song.title ?? ""
         self.interpret = song.artist ?? ""
-        self.appleMusicSongID = String(song.persistentID)
+        self.appleMusicSongID = song.playbackStoreID
         self.image = song.artwork?.image(at: CGSize(width: 150, height: 150))?.pngData()
+        self.length = CGFloat(song.playbackDuration)
         if title == ""{
             print("NO TITLE")
             return nil

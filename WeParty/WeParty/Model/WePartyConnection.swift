@@ -131,8 +131,16 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             switch content {
             case .song(let song):
                 self.state.nowPlaying = song
+                self.state.currentPosition = 0.0
+                self.state.endPostition = song.length ?? 0.0
+                print("END \(self.state.endPostition)")
             case .isPlaying(let playing):
                 self.state.playing = playing
+                if playing{
+                    self.state.startIncrementingCurrent()
+                }else{
+                    self.state.stopIncrementingCurrent()
+                }
             case .queue(let songs):
                 self.state.queue = songs
             case .none:

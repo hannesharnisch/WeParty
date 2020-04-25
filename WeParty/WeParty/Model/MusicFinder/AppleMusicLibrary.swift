@@ -141,7 +141,7 @@ class AppleMusicURLs{
         }
     }
     func buildSearchURL(limit:Int,term:String,types:String) ->URL?{
-        let updatedTerm = term.replacingOccurrences(of: " ", with: "+")
+        let updatedTerm = term.replacingOccurrences(of: " ", with: "+").replacingOccurrences(of: "&", with: "+")
         let url = searchURL.replacingOccurrences(of: "<term>", with: updatedTerm).replacingOccurrences(of: "<types>", with: types).replacingOccurrences(of: "<limit>", with: String(limit))
         return URL(string: url)
     }

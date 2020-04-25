@@ -13,18 +13,20 @@ struct SendingView: View {
     @EnvironmentObject var state:WePartyState
     @Binding var selectMusik:Bool
     @State var showMusikPlaying:CGFloat = 0
+    @State private var editMode = EditMode.inactive
+    
     var body: some View {
         ZStack{
             NavigationView{
-                ScrollView(.vertical){
+                VStack{
                     if self.state.queue.count == 0 && self.state.isServer{
                     Button(action: {
                         self.selectMusik = true
                     }){
-                        Text("Select Music").padding()
+                        Text(NSLocalizedString("selectMusic", comment:"select Music button")).padding()
                     }
                 }
-                QueueView().padding().frame(width:UIScreen.main.bounds.width).sheet(isPresented: self.$selectMusik, onDismiss: {
+                QueueView(connectivity:connectivity).sheet(isPresented: self.$selectMusik, onDismiss: {
     
                 }) {
                     VStack{
@@ -39,15 +41,16 @@ struct SendingView: View {
                         }
                     }
                 }
-                }.navigationBarTitle(Text("\(self.state.currentHost?.displayName ?? "My") Music")).navigationBarItems(trailing:
+                }.navigationBarTitle(Text("\(self.state.currentHost?.displayName ?? NSLocalizedString("my", comment:"My word")) \(NSLocalizedString("music", comment:"music word"))")).navigationBarItems(leading: self.state.isServer ? EditButton() : nil,trailing:
                     Button(action: {
                         self.selectMusik.toggle()
                     }) {
                         Image(systemName: "rectangle.stack.fill.badge.plus").resizable().frame(width: 30, height: 30, alignment: .trailing)
                     }.disabled(self.state.queue.count == 0 && !self.state.isServer)
                 )
+                .environment(\.editMode, $editMode)
             }
-            NowPlayingInfoView(showMusikPlaying: self.$showMusikPlaying , controller: self.connectivity, nowPlaying: $state.nowPlaying, enabled: $state.isServer, playing: $state.playing)
+            NowPlayingInfoView(showMusikPlaying: self.$showMusikPlaying , controller: self.connectivity, nowPlaying: $state.nowPlaying,current: $state.currentPosition,total: $state.endPostition, enabled: $state.isServer, playing: $state.playing)
         }
     }
 }

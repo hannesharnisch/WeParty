@@ -12,6 +12,12 @@ import MediaPlayer
 class MusicPlayer{
     private var musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var delegate:MusicPlayerDelegate?
+    private var currentPlaybackTime:Double?
+    var playHeadTimer:Timer? = nil {
+        willSet {
+            playHeadTimer?.invalidate()
+        }
+    }
     private var queue:[Song]!{didSet{
         print("QUEUE:  \(self.queue)")
         }
@@ -25,6 +31,21 @@ class MusicPlayer{
         NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlaybackState(_:)), name: .MPMusicPlayerControllerPlaybackStateDidChange, object: nil)
         musicPlayer.repeatMode = .all
         musicPlayer.shuffleMode = .off
+    }
+    func subscribeToPlayHead(){
+        playHeadTimer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.playHeadChangeTimer), userInfo: nil, repeats: true)
+    }
+    func cancelPlayHeadSubscription(){
+        playHeadTimer?.invalidate()
+        playHeadTimer = nil
+    }
+    @objc func playHeadChangeTimer(){
+        if Double(musicPlayer.currentPlaybackTime) != self.currentPlaybackTime || self.currentPlaybackTime == nil {
+            self.currentPlaybackTime = Double(musicPlayer.currentPlaybackTime)
+            if self.delegate != nil{
+                delegate?.playHeadPositionChanged(current: Double(musicPlayer.currentPlaybackTime), total: Double(musicPlayer.nowPlayingItem?.playbackDuration ?? 0))
+            }
+        }
     }
     func setSongs(queue:MPMediaItemCollection){
         musicPlayer.setQueue(with: queue)
@@ -64,6 +85,7 @@ class MusicPlayer{
         self.queue.append(contentsOf: songs)
         print(queue)
         let descriptor = MPMusicPlayerStoreQueueDescriptor(storeIDs: ids)
+        print("DESCRIPTOR \(descriptor)")
         musicPlayer.append(descriptor)
         self.delegate?.queueDidChange(queue: songs, type: .songsAppended(afterIndex: ((queue.count-2) - (indexNowPlayingItem ?? 0))))
     }
@@ -97,10 +119,32 @@ class MusicPlayer{
         return newQueue
     }
     func removeSongFromQueue(song:Song){
-        self.queue.removeAll { (song1) -> Bool in
+        print("REMOVing \(song.title)")
+        guard var queue = getCurrentQueue() else{
+            print("ERROR loading QUEUE")
+            return
+        }
+        let element = queue.removeLast()
+        queue.insert(element, at: 0)
+        queue.removeAll { (song1) -> Bool in
             return song1 == song
         }
-        musicPlayer.setQueue(with: self.queueDescriptorFrom(songs: self.queue!))
+        let state = musicPlayer.playbackState
+        let playbackTime = musicPlayer.currentPlaybackTime
+        self.queue = queue
+        musicPlayer.prepareToPlay()
+        musicPlayer.setQueue(with: self.queueDescriptorFrom(songs: queue))
+        //musicPlayer.prepareToPlay()
+        if state == .playing{
+            musicPlayer.play()
+        }
+        setNowPlayingPosition(position: playbackTime)
+    }
+    func setNowPlayingPosition(position:TimeInterval){
+        guard musicPlayer.nowPlayingItem?.playbackDuration ?? 0.0 > position else{
+            return
+        }
+        musicPlayer.currentPlaybackTime = position
     }
     func queueDescriptorFrom(songs:[Song])->MPMusicPlayerStoreQueueDescriptor{
         var ids = [String]()
@@ -115,23 +159,36 @@ class MusicPlayer{
         if delegate != nil {
             if indexNowPlayingItem != nil && (indexNowPlayingItem ?? 0 < queue?.count ?? 0 + 10){
             if index == (indexNowPlayingItem! - 1){
-                self.delegate!.queueDidChange(queue: self.getCurrentQueue(), type: .previousSong)
+                self.delegate!.queueDidChange(queue: self.getCurrentQueue()!, type: .previousSong)
             } else if index == (indexNowPlayingItem! + 1){
-                self.delegate!.queueDidChange(queue: self.getCurrentQueue(), type: .nextSong)
+                self.delegate!.queueDidChange(queue: self.getCurrentQueue()!, type: .nextSong)
             } else{
-                self.delegate!.queueDidChange(queue: self.getCurrentQueue(), type: .complete)
+                let queue = self.getCurrentQueue()
+                if queue != nil{
+                    self.delegate!.queueDidChange(queue: queue!,type: .complete)
+                }else{
+                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
+                        guard let queue = self.getCurrentQueue() else{
+                            return
+                        }
+                        self.delegate!.queueDidChange(queue: queue,type: .complete)
+                    }
+                }
             }
         }
+            self.playHeadChangeTimer()
             self.indexNowPlayingItem = index
             self.delegate!.nowPlayingChanged(nowPlaying: musicPlayer.nowPlayingItem)
         }
     }
-    func getCurrentQueue() -> [Song]{
+    func getCurrentQueue() -> [Song]?{
         let items = queue!
         let index = musicPlayer.indexOfNowPlayingItem
         var queue = [Song]()
         if items.count == 1{
             queue.append(items[0])
+        }else if index >= items.count{
+            return nil
         }else{
             if index < items.count - 1 {
                 for i in (index + 1..<items.count){
@@ -146,8 +203,18 @@ class MusicPlayer{
     }
     @objc private func sendChangedQueue(_ notification: Notification){
         print("SENDing QUEUE")
+        let queue = self.getCurrentQueue()
         if delegate != nil && queue != nil{
-            self.delegate!.queueDidChange(queue: self.getCurrentQueue(),type: .complete)
+            if queue != nil{
+                self.delegate!.queueDidChange(queue: queue!,type: .complete)
+            }else{
+                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
+                    guard let queue = self.getCurrentQueue() else{
+                        return
+                    }
+                    self.delegate!.queueDidChange(queue: queue,type: .complete)
+                }
+            }
         }
     }
     @objc private func sendPlaybackState(_ notification: Notification){
@@ -175,6 +242,7 @@ protocol MusicPlayerDelegate {
     func nowPlayingChanged(nowPlaying:MPMediaItem?)
     func queueDidChange(queue:[Song],type:QueueChangeType)
     func playingStateChanged(state: MPMusicPlaybackState)
+    func playHeadPositionChanged(current:Double,total:Double)
 }
 enum QueueChangeType{
     case complete

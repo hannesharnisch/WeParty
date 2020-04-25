@@ -17,7 +17,21 @@ class WePartyState:ObservableObject{
     @Published var connectedPeers:[MCPeerID] = []
     @Published var queue:[Song] = []
     @Published var nowPlaying:Song?
+    @Published var currentPosition:CGFloat = 0.0
+    @Published var endPostition:CGFloat = 0.0
     @Published var showMusicPicker = false
     @Published var showAlertView = false
     @Published var currentHost:MCPeerID?
+    var timer:Timer?
+    
+    func startIncrementingCurrent(){
+        timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.incrementTime), userInfo: nil, repeats: true)
+    }
+    @objc private func incrementTime(){
+        self.currentPosition += 0.8
+    }
+    func stopIncrementingCurrent(){
+        timer?.invalidate()
+        timer = nil
+    }
 }

@@ -11,26 +11,30 @@ import SwiftUI
 struct QueueView: View {
     @EnvironmentObject var state:WePartyState
     @State var percentage:CGFloat = 0.0
+    var connectivity:WePartyModel?
     var body: some View {
         VStack(alignment: .leading){
             if self.state.queue.count != 0{
-                Text("Next Songs:").font(.caption).padding()
-                Divider()
+                Text("\(NSLocalizedString("nextSongs", comment:"next Songs label")):").font(.caption).padding()
+                //Divider()
             }
-            TableView(deleteOption: self.$state.isServer, deletedAt: { index in
+            TableView(deleteOption: self.$state.isServer, deletedAt: { indexes in
+                for index in indexes{
+                    let song = self.state.queue[index]
+                    print("DELETING \(song.title)")
+                    self.connectivity?.removeFromQueue(song: song)
+                }
+            }, moved: { source, destination in
                 
             }, list: self.$state.queue) { song in
-                VStack(alignment: .leading){
                 HStack{
                     SongImageView(percentage: self.$percentage, songImage: song.getImage())
                     VStack(alignment: .leading){
                         Text(song.title)
                         Text(song.interpret)
                     }
-                }
-                Divider()
-                }
-            }
+                }.padding(2)
+            }.frame(width:UIScreen.main.bounds.width)
             Spacer(minLength: 80)
             }
         }

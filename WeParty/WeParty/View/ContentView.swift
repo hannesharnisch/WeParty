@@ -16,15 +16,15 @@ struct ContentView: View {
     @State var model:WePartyModel?
     @State var showMusikPlaying:CGFloat = 0
     var body: some View {
-        VStack{
+        Group{
             if isloadingScreenShown{
                 LoadingScreen(isLoadingScreenShown: $isloadingScreenShown)
             }else{
                 TabView(selection: $selectedView){
                     ConnectionView(model: model?.connection).tabItem {
                         Image(systemName: "antenna.radiowaves.left.and.right")
-                        Text("Connect")
-                    }.tag(0)
+                        Text(NSLocalizedString("connect", comment:"connect word"))
+                    }.tag(0).navigationViewStyle(StackNavigationViewStyle())
                     if self.state.connectedPeers.count != 0 || self.state.isServer{
                         SendingView(connectivity: self.model, selectMusik: self.$state.showMusicPicker).tabItem {
                             Image(systemName: "music.house")
@@ -33,7 +33,7 @@ struct ContentView: View {
                                     self.selectedView = 1
                                 }
                             }
-                        }.tag(1)
+                        }.tag(1).navigationViewStyle(StackNavigationViewStyle())
                     }
                     Settings().tabItem {
                         Image(systemName: "gear")
@@ -42,14 +42,14 @@ struct ContentView: View {
                                 self.selectedView = 1
                             }
                         }
-                    }.tag(2)
+                    }.tag(2).navigationViewStyle(StackNavigationViewStyle())
                 }.onAppear {
                     self.model = WePartyModel(state:self.state)
                     AppSettings.current.requestMusicCapabilities(){result in
                         
                     }
                 }.alert(isPresented: $state.showAlertView) {
-                    Alert(title: Text("Joining Request"), message: Text("\(self.state.discoveredPeers[0].displayName) wants to join the Party"), primaryButton: .default(Text("Connect")) {
+                    Alert(title: Text("Joining Request"), message: Text("\(self.state.discoveredPeers[0].displayName) wants to join the Party"), primaryButton: .default(Text(NSLocalizedString("connect", comment:"connect word"))) {
                         self.model?.connection.connection(accept: true, peer: self.state.discoveredPeers[0])
                         }, secondaryButton: .cancel(){
                             self.model?.connection.connection(accept: false, peer: self.state.discoveredPeers[0])

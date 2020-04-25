@@ -87,7 +87,9 @@ struct ExtendablePicker:View{
                 }
             }
         }
-        }.padding()
+        }.padding().onDisappear {
+            self.action(self.data[self.selection])
+        }
     }
 }
 struct SettingsInfoBitView: View {

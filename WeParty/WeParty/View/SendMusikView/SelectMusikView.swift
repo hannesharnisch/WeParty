@@ -17,7 +17,6 @@ struct SelectMusikView<T:MPMediaPickerControllerDelegate>: UIViewControllerRepre
         self.connectivity = connectivity
     }
     func makeUIViewController(context: Context) -> UIViewController {
-        
         let controller = MPMediaPickerController(mediaTypes: .music)
         controller.delegate = connectivity!
         controller.prompt = "Pick a song to Send"

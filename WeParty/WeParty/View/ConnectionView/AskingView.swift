@@ -11,11 +11,12 @@ import SwiftUI
 struct AskingView: View{
     @Binding var wasIsServerSet:Bool
     @Binding var isServer:Bool
+    @State var showHelp = false
     var onSelected:() -> ()
     var body: some View {
         VStack{
             Spacer()
-            Text("Do you want to start or join a Party?").multilineTextAlignment(.center).font(.headline)
+            Text(NSLocalizedString("startingorJoiningParyQuestion", comment:"party start or join Question")).multilineTextAlignment(.center).font(.headline)
             Spacer()
             HStack{
             Spacer()
@@ -25,7 +26,7 @@ struct AskingView: View{
                 self.wasIsServerSet.toggle()
                 self.onSelected()
             }){
-                Text("Start a Party").foregroundColor(.white)
+                Text(NSLocalizedString("startParty", comment:"party start")).foregroundColor(.white)
                 .frame(width: UIScreen.main.bounds.width/2 - 40, height: 80, alignment: .center)
                     .background(RoundedRectangle(cornerRadius: 10).fill().foregroundColor(.blue))
             }
@@ -38,7 +39,7 @@ struct AskingView: View{
                 self.wasIsServerSet.toggle()
                 self.onSelected()
             }){
-                Text("Join a Party").foregroundColor(.white)
+                Text(NSLocalizedString("joinParty", comment:"party join")).foregroundColor(.white)
                     .frame(width: UIScreen.main.bounds.width/2 - 40, height: 80, alignment: .center)
                 .background(RoundedRectangle(cornerRadius: 10).fill().foregroundColor(.blue))
             }
@@ -47,6 +48,17 @@ struct AskingView: View{
             Spacer()
             }
             Spacer()
-        }.padding()
+            HStack{
+                Button(action:{
+                    self.showHelp.toggle()
+                }){
+                    Image(systemName:"questionmark.circle")
+                }
+                Spacer()
+            }
+        }.padding().sheet(isPresented: self.$showHelp,onDismiss:{
+        }){
+           HelpView()
+        }
     }
 }

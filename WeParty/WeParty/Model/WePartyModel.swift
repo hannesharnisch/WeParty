@@ -42,6 +42,14 @@ class WePartyModel:NSObject, PartyCollaborateMCConnectionDelegate{
             }
         }
     }
+    func removeFromQueue(song:Song){
+        songLoadingQueue.async {
+            self.musicPlayer.removeSongFromQueue(song: song)
+        }
+    }
+    func moveSong(song:Song,to index:Int){
+        
+    }
     func addToQueue(songs:[Song],from host:Bool){
         switch AppSettings.current.musicQueueingMode {
         case .append:
@@ -92,7 +100,7 @@ extension WePartyModel:MPMediaPickerControllerDelegate,SearchForSongsDelegate{
         print("RECIEVED MEDIAITEM")
         DispatchQueue.main.async {
             self.state.showMusicPicker = false
-            if self.firstTimePlaying{
+            if self.firstTimePlaying && self.state.isServer{
                 self.state.nowPlaying = Song(title: "Loading...", interpret: "")
             }
         }
@@ -164,6 +172,13 @@ extension WePartyModel:MPMediaPickerControllerDelegate,SearchForSongsDelegate{
     }
 }
 extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
+    func playHeadPositionChanged(current: Double, total: Double) {
+        DispatchQueue.main.async {
+            self.state.currentPosition = CGFloat(current)
+            self.state.endPostition = CGFloat(total)
+        }
+    }
+    
     func nowPlayingChanged(nowPlaying: MPMediaItem?) {
         print("STARTED Conn?")
         print(connection.hasStarted)
@@ -266,6 +281,13 @@ extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
         case .previous:
             self.musicPlayer.backward()
             
+        }
+    }
+    func changedStateTo(large:Bool){
+        if large{
+            self.musicPlayer.subscribeToPlayHead()
+        }else{
+            self.musicPlayer.cancelPlayHeadSubscription()
         }
     }
 }

@@ -22,24 +22,20 @@ struct LoadingScreen: View {
             Path{ path in
                 let height = UIScreen.main.bounds.width - 50
                 let width = height
-                let ytranslation:CGFloat = UIScreen.main.bounds.height/2 - (width/2+15);
+                let ytranslation:CGFloat = UIScreen.main.bounds.height/2 - (width/2+35);
                 let xtranslation:CGFloat = 25
                 path.move(to: CGPoint(x: xtranslation, y: height/2+ytranslation));
                 path.addLine(to: CGPoint(x: width+xtranslation, y: height/2+ytranslation));
                 path.move(to: CGPoint(x: width/2+xtranslation, y: ytranslation));
                 path.addLine(to: CGPoint(x: width/2+xtranslation, y: height+ytranslation))
                 
-            }.stroke(lineWidth: 30).foregroundColor(.white).rotationEffect(.degrees(animate ? 360 : 0)).opacity(animate ? 0.2 : 1.0).animation(.easeInOut(duration: 1.0))
+            }.stroke(style: StrokeStyle(lineWidth: 30, lineCap: .round)).foregroundColor(.white).cornerRadius(2).rotationEffect(.degrees(animate ? 720 : 0)).opacity(animate ? 0.0 : 1.0).animation(.easeIn(duration: 1.4))
             Spacer()
-            Text("Touch to Start!").foregroundColor(.blue).opacity(self.opacity).onAppear(){withAnimation(self.repeatingAnimation){self.opacity = 1.0}}
+            Text(NSLocalizedString("touchToStart", comment:"Touch to start description")).foregroundColor(.blue).opacity(animate ? 0.0 :self.opacity).onAppear(){withAnimation(self.repeatingAnimation){self.opacity = 1.0}}.padding()
             Spacer()
-        }.background(Image( "170622kategorie-party-und-events-header_mini").resizable().scaledToFill().opacity(animate ? 0.0 : 1.0).animation(.easeInOut(duration: 1.0))).edgesIgnoringSafeArea([.top,.bottom]).onTapGesture {
-            if self.animate{
-                self.animate = false
-            }else{
+        }.background(Image( "170622kategorie-party-und-events-header_mini").resizable().scaledToFill().opacity(animate ? 0.0 : 1.0).animation(.easeInOut(duration: 1.5))).edgesIgnoringSafeArea([.top,.bottom]).onTapGesture {
                 self.animate = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                 self.isLoadingScreenShown = false
             }
             

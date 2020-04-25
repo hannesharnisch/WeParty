@@ -13,6 +13,8 @@ struct MusicControlLarge: View {
     @Binding var nowPlaying:Song?
     @Binding var enabled:Bool
     @Binding var playing:Bool
+    @Binding var current:CGFloat
+    @Binding var total:CGFloat
     var onPlayPause:(Bool) -> ()
     var onBackward:() ->()
     var onForward:() -> ()
@@ -24,19 +26,34 @@ struct MusicControlLarge: View {
         self.onPlayPause = onPlayPause
         self.onBackward = onBackward
         self.onForward = onForward
+        self._current = .constant(0.0)
+        self._total = .constant(0.0)
+    }
+    init(playing:Binding<Bool>,nowPlaying:Binding<Song?>,current:Binding<CGFloat>,total:Binding<CGFloat>,enabled:Binding<Bool>,onPlayPause:@escaping(Bool) -> (),onForward:@escaping() -> (),onBackward:@escaping () -> ()){
+        self._playing = playing
+        self._nowPlaying = nowPlaying
+        self._enabled = enabled
+        self.onPlayPause = onPlayPause
+        self.onBackward = onBackward
+        self.onForward = onForward
+        self._current = current
+        self._total = total
     }
     var body: some View {
         Group{
-            //MusikSlider(value:(CGFloat(state.nowPlaying?.bookmarkTime ?? 1) / CGFloat(state.nowPlaying?.playbackDuration ?? 1))).disabled(!self.state.isServer).padding(.horizontal)
+            if self.total != 0.0 {
+                MusikSlider(current: $current,total:$total,action:{ value in
+                    print(value)
+                }).disabled(enabled).padding(.horizontal)
+            }
             if (self.nowPlaying != nil){
                 VStack(alignment:.leading){
-                    Text(self.nowPlaying?.title ?? "").padding(.horizontal).padding(.top)
-                    Text(self.nowPlaying?.interpret ?? "").padding(.horizontal).padding(.bottom).font(.caption)
+                    Text(self.nowPlaying?.title ?? "").padding(.horizontal)
+                    Text(self.nowPlaying?.interpret ?? "").padding(.horizontal).font(.caption)
                 }
             }else{
                 Text("Not Playing").padding()
             }
-            Spacer()
             HStack{
                 Spacer()
                 Button(action: {
@@ -59,8 +76,7 @@ struct MusicControlLarge: View {
                     }.padding().disabled(!enabled)
                 Spacer()
             }
-            Spacer()
-        }
+        }.padding()
     }
 }
 struct MusicControlSmall: View{

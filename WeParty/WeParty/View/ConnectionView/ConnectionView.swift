@@ -23,7 +23,7 @@ struct ConnectionView: View {
                 }else{
                     ConnectingView(discoveredPeers: self.$state.discoveredPeers, connectedPeers: self.$state.connectedPeers, isServer: self.$state.isServer, currentHost: self.$state.currentHost,connectivity: model)
                 }
-            }.navigationBarTitle(Text("Connection \(wasIsServerSet ? self.state.isServer ? "Partyhost" : "Join" : "")"))
+            }.navigationBarTitle(Text("\(NSLocalizedString("connection", comment:"connection word")) \(wasIsServerSet ? self.state.isServer ? NSLocalizedString("PartyHost", comment:"PartyHost word") : NSLocalizedString("join", comment:"join word") : "")"))
         }
     }
 }
@@ -40,10 +40,10 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
             VStack(alignment: .leading){
             HStack{
                 ActivityIndicator(isAnimating: .constant(true), style: .medium)
-                Text("Searching for \(self.isServer ? "People" : "Party-hosts")").font(.headline)
+                Text("\(NSLocalizedString("searchingFor", comment:"searching for text")) \(self.isServer ? NSLocalizedString("people", comment:"people word") : NSLocalizedString("PartyHost", comment:"PartyHost word"))").font(.headline)
             }.padding(.horizontal).padding(.bottom, 4).padding(.top)
             HStack{
-                Text("Me: ")
+                Text("\(NSLocalizedString("me", comment:"me word")): ")
                 Spacer()
                 Text("\(UIDevice.current.name)")
             }.padding()
@@ -54,7 +54,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                 Divider()
             }
             if self.connectedPeers.count != 0{
-                Text("Connected People").font(.caption).padding(.horizontal)
+                Text("\(NSLocalizedString("connected", comment:"connected word")) \(NSLocalizedString("people", comment:"people word"))").font(.caption).padding(.horizontal)
                 ForEach(self.connectedPeers, id:\.self){ peer in
                     VStack(alignment:.leading){
                         Divider()
@@ -75,7 +75,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                 if self.discoveredPeers.count != 0{
                 if !self.isServer{
                     Divider()
-                    Text("Discovered \(self.isServer ? "People" : "Party-hosts")").font(.caption).padding(.horizontal)
+                    Text("\(NSLocalizedString("discovered", comment:"discovered word")) \(NSLocalizedString("PartyHosts", comment:"PartyHosts word"))").font(.caption).padding(.horizontal)
                     ForEach(self.discoveredPeers, id:\.self){ peer in
                         VStack(alignment:.leading){
                             Divider()
@@ -85,7 +85,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                                     Button(action:{
                                         self.connectivity?.connectTo(peer: peer)
                                     }){
-                                        Text("Connect")
+                                        Text(NSLocalizedString("connect", comment:"connect word"))
                                     }.disabled(self.connectedPeers.count != 0)
                             }.padding()
                         }

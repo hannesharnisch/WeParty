@@ -81,11 +81,14 @@
 		D13D0E1024451F970035A0B2 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = D13D0E0F24451F970035A0B2 /* SwiftJWT */; };
 		D13D0E12244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 in Resources */ = {isa = PBXBuildFile; fileRef = D13D0E11244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 */; };
 		D13D0E142445BB170035A0B2 /* AskingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13D0E132445BB170035A0B2 /* AskingView.swift */; };
+		D14B1D71245201E600D90EAA /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D70245201E600D90EAA /* HelpView.swift */; };
+		D14B1D742452BC3B00D90EAA /* MPVolumeViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14B1D732452BC3B00D90EAA /* MPVolumeViewRepresentable.swift */; };
 		D1909060244B06F600C57B0B /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190905F244B06F600C57B0B /* TableView.swift */; };
 		D1909062244B0F8300C57B0B /* SearchForSongView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909061244B0F8300C57B0B /* SearchForSongView.swift */; };
 		D1909064244B10F800C57B0B /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909063244B10F800C57B0B /* SearchBar.swift */; };
 		D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909067244B8B2800C57B0B /* AppSettings.swift */; };
 		D190906B244B99FC00C57B0B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190906A244B99FC00C57B0B /* Settings.swift */; };
+		D1ED4A5A244F040B0090C7E8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D1ED4A5C244F040B0090C7E8 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,12 +146,17 @@
 		D13D0E0724451F2A0035A0B2 /* MusicFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicFinder.swift; sourceTree = "<group>"; };
 		D13D0E11244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AuthKey_QH8XRCS4JS.p8; sourceTree = "<group>"; };
 		D13D0E132445BB170035A0B2 /* AskingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskingView.swift; sourceTree = "<group>"; };
+		D14B1D70245201E600D90EAA /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		D14B1D732452BC3B00D90EAA /* MPVolumeViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVolumeViewRepresentable.swift; sourceTree = "<group>"; };
 		D190905F244B06F600C57B0B /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
 		D1909061244B0F8300C57B0B /* SearchForSongView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchForSongView.swift; sourceTree = "<group>"; };
 		D1909063244B10F800C57B0B /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		D1909067244B8B2800C57B0B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		D1909069244B8CB800C57B0B /* WeParty.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeParty.entitlements; sourceTree = "<group>"; };
 		D190906A244B99FC00C57B0B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		D1ED4A59244F02D20090C7E8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		D1ED4A5B244F040B0090C7E8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D1ED4A5D244F04120090C7E8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +188,7 @@
 		D13D0D762444CC630035A0B2 = {
 			isa = PBXGroup;
 			children = (
+				D1ED4A5C244F040B0090C7E8 /* Localizable.strings */,
 				D13D0E11244520390035A0B2 /* AuthKey_QH8XRCS4JS.p8 */,
 				D13D0D812444CC630035A0B2 /* WeParty */,
 				D13D0D982444CC640035A0B2 /* WePartyTests */,
@@ -243,6 +252,7 @@
 		D13D0DB62444CC9C0035A0B2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D14B1D72245201ED00D90EAA /* Help */,
 				D190906C244B9A4A00C57B0B /* Settings */,
 				D13D0DEA24450E380035A0B2 /* NowPlayingView */,
 				D13D0DDD24450CC00035A0B2 /* SendMusikView */,
@@ -309,6 +319,7 @@
 				D13D0DED24450E380035A0B2 /* DraggableSmallRepresentationView.swift */,
 				D13D0DEE24450E380035A0B2 /* MusikSlider.swift */,
 				D13D0DEF24450E380035A0B2 /* NowPlayingView.swift */,
+				D14B1D732452BC3B00D90EAA /* MPVolumeViewRepresentable.swift */,
 			);
 			path = NowPlayingView;
 			sourceTree = "<group>";
@@ -320,6 +331,14 @@
 				D13D0E0724451F2A0035A0B2 /* MusicFinder.swift */,
 			);
 			path = MusicFinder;
+			sourceTree = "<group>";
+		};
+		D14B1D72245201ED00D90EAA /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				D14B1D70245201E600D90EAA /* HelpView.swift */,
+			);
+			path = Help;
 			sourceTree = "<group>";
 		};
 		D190906C244B9A4A00C57B0B /* Settings */ = {
@@ -419,6 +438,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = D13D0D762444CC630035A0B2;
 			packageReferences = (
@@ -440,6 +460,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1ED4A5A244F040B0090C7E8 /* Localizable.strings in Resources */,
 				D13D0D8F2444CC640035A0B2 /* LaunchScreen.storyboard in Resources */,
 				D13D0D8C2444CC640035A0B2 /* Preview Assets.xcassets in Resources */,
 				D13D0D892444CC640035A0B2 /* Assets.xcassets in Resources */,
@@ -473,6 +494,7 @@
 				D13D0DE124450CC00035A0B2 /* InputSongView.swift in Sources */,
 				D13D0DF324450E380035A0B2 /* SongImageView.swift in Sources */,
 				D13D0E0824451F2A0035A0B2 /* AppleMusicLibrary.swift in Sources */,
+				D14B1D71245201E600D90EAA /* HelpView.swift in Sources */,
 				D13D0E0B24451F2A0035A0B2 /* MusicFinder.swift in Sources */,
 				D13D0E142445BB170035A0B2 /* AskingView.swift in Sources */,
 				D13D0DCD2444DD890035A0B2 /* MCConnection.swift in Sources */,
@@ -489,6 +511,7 @@
 				D13D0E00244513D70035A0B2 /* QueueView.swift in Sources */,
 				D13D0D852444CC630035A0B2 /* SceneDelegate.swift in Sources */,
 				D13D0DFC24450E380035A0B2 /* NowPlayingView.swift in Sources */,
+				D14B1D742452BC3B00D90EAA /* MPVolumeViewRepresentable.swift in Sources */,
 				D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */,
 				D1909064244B10F800C57B0B /* SearchBar.swift in Sources */,
 				D13D0DCA2444DD890035A0B2 /* MCHost.swift in Sources */,
@@ -579,8 +602,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				D13D0D8E2444CC640035A0B2 /* Base */,
+				D1ED4A59244F02D20090C7E8 /* de */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		D1ED4A5C244F040B0090C7E8 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D1ED4A5B244F040B0090C7E8 /* de */,
+				D1ED4A5D244F04120090C7E8 /* en */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -590,6 +623,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -650,6 +684,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

@@ -29,7 +29,18 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                     Spacer()
                 }.contentShape(Rectangle()).onTapGesture {
                         self.percentage = 0
-                }
+                }.gesture(
+                    DragGesture()
+                    .updating($dragOffset, body: { (value, state, transaction) in
+                        state = value.translation
+                    })
+                    .onEnded({ value in
+                        if (CGFloat(value.translation.height)*2 >= UIScreen.main.bounds.height/2){
+                        self.percentage = 0
+                    }else{
+                        self.percentage = 100
+                    }
+                }))
                     Spacer()
             }
             HStack(alignment:.center){
@@ -37,7 +48,18 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                 if percentage == 0{
                     smallContent
                 }
-            }.padding(.bottom, 3).padding(.horizontal, 5).padding(.top, 6).onTapGesture {
+            }.padding(.bottom, 3).padding(.horizontal, 5).padding(.top, 6).gesture(
+                DragGesture()
+                .updating($dragOffset, body: { (value, state, transaction) in
+                    state = value.translation
+                })
+                .onEnded({ value in
+                    if (CGFloat(value.translation.height)*2 >= UIScreen.main.bounds.height/2){
+                    self.percentage = 0
+                }else{
+                    self.percentage = 100
+                }
+            })).onTapGesture {
                 if self.percentage == 0{
                     self.percentage = 100
                 }
@@ -47,18 +69,7 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                 largeContent
             }
             Spacer()
-        }.padding(6).frame(width: UIScreen.main.bounds.width,height: (75 + (((percentage/100) * (UIScreen.main.bounds.height - 180)) - CGFloat(self.dragOffset.height)))).gesture(
-            DragGesture()
-            .updating($dragOffset, body: { (value, state, transaction) in
-                state = value.translation
-            })
-            .onEnded({ value in
-                if (CGFloat(value.translation.height)*2 >= UIScreen.main.bounds.height/2){
-                self.percentage = 0
-            }else{
-                self.percentage = 100
-            }
-        })).background(Blur().onTapGesture {
+        }.padding(6).frame(width: UIScreen.main.bounds.width,height: (75 + (((percentage/100) * (UIScreen.main.bounds.height - 180)) - CGFloat(self.dragOffset.height)))).background(Blur().onTapGesture {
             if self.percentage == 0{
                 self.percentage = 100
             }
