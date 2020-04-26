@@ -18,10 +18,7 @@ class MusicPlayer{
             playHeadTimer?.invalidate()
         }
     }
-    private var queue:[Song]!{didSet{
-        print("QUEUE:  \(self.queue)")
-        }
-    }
+    private var queue:[Song]!
     private var indexNowPlayingItem:Int?
     
     init(){
@@ -74,20 +71,18 @@ class MusicPlayer{
         for song in songs.items{
             songsson.append(Song(song: song)!)
         }
+        self.delegate?.queueDidChange(queue: songsson, type: .songsAppended(afterIndex: ((queue.count-1) - (indexNowPlayingItem ?? 0))))
         self.queue.append(contentsOf: songsson)
-        self.delegate?.queueDidChange(queue: songsson, type: .songsAppended(afterIndex: ((queue.count-2) - (indexNowPlayingItem ?? 0))))
     }
     func addSongsToQueue(songs:[Song]){
         var ids = [String]()
         for song in songs{
             ids.append(song.appleMusicSongID!)
         }
-        self.queue.append(contentsOf: songs)
-        print(queue)
         let descriptor = MPMusicPlayerStoreQueueDescriptor(storeIDs: ids)
-        print("DESCRIPTOR \(descriptor)")
         musicPlayer.append(descriptor)
-        self.delegate?.queueDidChange(queue: songs, type: .songsAppended(afterIndex: ((queue.count-2) - (indexNowPlayingItem ?? 0))))
+        self.delegate?.queueDidChange(queue: songs, type: .songsAppended(afterIndex: ((queue.count-1) - (indexNowPlayingItem ?? 0))))
+        self.queue.append(contentsOf: songs)
     }
     func prependSongsToQueue(songs: MPMediaItemCollection){
         let descriptor = MPMusicPlayerMediaItemQueueDescriptor(itemCollection: songs)
@@ -131,6 +126,7 @@ class MusicPlayer{
         }
         let state = musicPlayer.playbackState
         let playbackTime = musicPlayer.currentPlaybackTime
+        let isNowPlayingBeeingDeleted = Song(song: musicPlayer.nowPlayingItem!) == song
         self.queue = queue
         musicPlayer.prepareToPlay()
         musicPlayer.setQueue(with: self.queueDescriptorFrom(songs: queue))
@@ -138,7 +134,9 @@ class MusicPlayer{
         if state == .playing{
             musicPlayer.play()
         }
-        setNowPlayingPosition(position: playbackTime)
+        if !isNowPlayingBeeingDeleted{
+            setNowPlayingPosition(position: playbackTime)
+        }
     }
     func setNowPlayingPosition(position:TimeInterval){
         guard musicPlayer.nowPlayingItem?.playbackDuration ?? 0.0 > position else{

@@ -43,17 +43,17 @@ class AppSettings{
                 }
                 var hasmusic = false
                 if capability.contains(SKCloudServiceCapability.musicCatalogPlayback) {
+                    hasmusic = true
                     DispatchQueue.main.async {
                         self.hasMusicInLib = true
-                        hasmusic = true
                         print("HAS SONGS")
                     }
                 }
 
                 if !capability.contains(SKCloudServiceCapability.musicCatalogSubscriptionEligible) {
+                    hasmusic = true
                     DispatchQueue.main.async {
                         self.hasAppleMusic = true
-                        hasmusic = true
                         print("HAS APPLE MUSIC")
                     }
                 }
@@ -74,5 +74,5 @@ class AppSettings{
 }
 
 enum QueueMode:String,CaseIterable{
-    case append,prepend,appendHostPrepend,prependHostAppend
+    case append = "append",prepend = "prepend",appendHostPrepend = "Only party-host prepend",prependHostAppend = "Only party-host append"
 }

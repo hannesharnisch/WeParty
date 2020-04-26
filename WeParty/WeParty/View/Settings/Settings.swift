@@ -15,12 +15,11 @@ struct Settings: View {
     @State var selection = Int(QueueMode.allCases.firstIndex(of: AppSettings.current.musicQueueingMode)!)
     var body: some View {
         NavigationView{
-            VStack{
+            List{
                 SettingsInfoBitView(text:"Connected to the Internet",wert: AppSettings.current.hasInternetConnection){
                     
                 }
                 if self.state.isServer{
-                    Divider()
                     ExtendablePicker(text:"Music queueing type",data:{
                         var data = [String]()
                         for mode in QueueMode.allCases{
@@ -31,7 +30,7 @@ struct Settings: View {
                         AppSettings.current.musicQueueingMode = QueueMode.init(rawValue: selection)!
                     }
                 }
-                Divider()
+                //Divider()
                 SettingsInfoBitView(text:"Connected to Music Library",wert: AppSettings.current.hasMusicInLib){
                     AppSettings.current.requestMediaLibraryAccess(){ success in
                         if !success{
@@ -40,7 +39,7 @@ struct Settings: View {
                         }
                     }
                 }
-                Divider()
+                //Divider()
                 SettingsInfoBitView(text:"Connected to Apple Music",wert:AppSettings.current.hasAppleMusic){
                     AppSettings.current.requestMusicCapabilities(){ success in
                         if !success{
@@ -49,8 +48,8 @@ struct Settings: View {
                         }
                     }
                 }
-                Spacer()
-            }.padding()
+                //Spacer()
+            }
                 .navigationBarTitle(Text("Settings"))
         }.alert(isPresented: $alertShown) {
             Alert(title: Text("Failed to Connect"), message: Text(alertText), dismissButton: .default(Text("ok")))
@@ -69,16 +68,10 @@ struct ExtendablePicker:View{
             Text(text)
             Spacer()
             Text(data[selection])
-            Button(action:{
-                self.showPicker.toggle()
-                self.action(self.data[self.selection])
-            }){
-                if showPicker {
-                    Text("Hide Picker")
-                }else{
-                    Text("Show Picker")
-                }
-            }
+            Image(systemName:"arrowtriangle.right.circle").rotationEffect(showPicker ? .init(degrees: 90):.zero)
+        }.onTapGesture {
+            self.showPicker.toggle()
+            self.action(self.data[self.selection])
         }
         if self.showPicker{
             Picker(selection: $selection, label: Text("")) {
@@ -109,6 +102,6 @@ struct SettingsInfoBitView: View {
                     Text("Try to connect").foregroundColor(.red)
                 }
             }
-        }.padding()
+        }.padding(.horizontal)
     }
 }

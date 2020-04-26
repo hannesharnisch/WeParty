@@ -12,10 +12,10 @@ struct TableView<T:View,S:Identifiable>: View {
     @Binding var deleteOption:Bool
     var content:(S) -> T
     @Binding var list:[S]
-    var deletedAt:(IndexSet) -> ()
+    var deleted:(S) -> ()
     var moved:(IndexSet,Int) -> ()
-    init(deleteOption:Binding<Bool>,deletedAt:@escaping(IndexSet) -> (),moved:@escaping(IndexSet,Int) -> (),list:Binding<[S]>,content: @escaping (S) -> T){
-        self.deletedAt = deletedAt
+    init(deleteOption:Binding<Bool>,deleted:@escaping(S) -> (),moved:@escaping(IndexSet,Int) -> (),list:Binding<[S]>,content: @escaping (S) -> T){
+        self.deleted = deleted
         self.content = content
         self._deleteOption = deleteOption
         self._list = list
@@ -40,8 +40,10 @@ struct TableView<T:View,S:Identifiable>: View {
         }
     }
     private func deleteRow(at indexSet: IndexSet) {
+        for index in indexSet{
+            self.deleted(self.list[index])
+        }
         self.list.remove(atOffsets: indexSet)
-        self.deletedAt(indexSet)
     }
     private func move(from source: IndexSet, to destination: Int){
         self.list.move(fromOffsets: source, toOffset: destination)

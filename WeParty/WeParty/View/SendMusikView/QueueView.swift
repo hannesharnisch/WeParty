@@ -18,12 +18,9 @@ struct QueueView: View {
                 Text("\(NSLocalizedString("nextSongs", comment:"next Songs label")):").font(.caption).padding()
                 //Divider()
             }
-            TableView(deleteOption: self.$state.isServer, deletedAt: { indexes in
-                for index in indexes{
-                    let song = self.state.queue[index]
+            TableView(deleteOption: self.$state.isServer, deleted: { song in
                     print("DELETING \(song.title)")
                     self.connectivity?.removeFromQueue(song: song)
-                }
             }, moved: { source, destination in
                 
             }, list: self.$state.queue) { song in

@@ -25,7 +25,7 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
             if percentage != 0{
                 HStack{
                     Spacer()
-                    Image(systemName: "minus").resizable().foregroundColor(Color(UIColor.lightGray)).frame(width:40,height:6).padding([.bottom,.horizontal],5).padding(.top, 3)
+                    Image(systemName: "minus").resizable().foregroundColor(Color(UIColor.lightGray)).frame(width:40,height:6).padding([.bottom,.horizontal],20).padding(.top, 3)
                     Spacer()
                 }.contentShape(Rectangle()).onTapGesture {
                         self.percentage = 0

@@ -20,23 +20,23 @@ struct LoadingScreen: View {
         VStack(alignment: .center){
             Spacer()
             Path{ path in
-                let height = UIScreen.main.bounds.width - 50
-                let width = height
-                let ytranslation:CGFloat = UIScreen.main.bounds.height/2 - (width/2+35);
-                let xtranslation:CGFloat = 25
-                path.move(to: CGPoint(x: xtranslation, y: height/2+ytranslation));
-                path.addLine(to: CGPoint(x: width+xtranslation, y: height/2+ytranslation));
-                path.move(to: CGPoint(x: width/2+xtranslation, y: ytranslation));
-                path.addLine(to: CGPoint(x: width/2+xtranslation, y: height+ytranslation))
+                let screen = UIScreen.main.bounds
+                let center = CGPoint(x: screen.width/2, y: screen.height/2 - 35)
+                let width = screen.width > 540 ? 500 : screen.width - 40
+                let height = width
+                path.move(to: CGPoint(x: center.x, y: center.y - height/2));
+                path.addLine(to: CGPoint(x: center.x, y: center.y + height/2));
+                path.move(to: CGPoint(x: center.x - width/2, y: center.y));
+                path.addLine(to: CGPoint(x: center.x + width/2, y: center.y))
                 
-            }.stroke(style: StrokeStyle(lineWidth: 30, lineCap: .round)).foregroundColor(.white).cornerRadius(2).rotationEffect(.degrees(animate ? 720 : 0)).opacity(animate ? 0.0 : 1.0).animation(.easeIn(duration: 1.4))
+            }.stroke(style: StrokeStyle(lineWidth: 30, lineCap: .round)).foregroundColor(.white).cornerRadius(2).rotationEffect(.degrees(animate ? 720 : 0)).opacity(animate ? 0.0 : 1.0).animation(.easeInOut(duration: 1.4))
             Spacer()
             Text(NSLocalizedString("touchToStart", comment:"Touch to start description")).foregroundColor(.blue).opacity(animate ? 0.0 :self.opacity).onAppear(){withAnimation(self.repeatingAnimation){self.opacity = 1.0}}.padding()
             Spacer()
-        }.background(Image( "170622kategorie-party-und-events-header_mini").resizable().scaledToFill().opacity(animate ? 0.0 : 1.0).animation(.easeInOut(duration: 1.5))).edgesIgnoringSafeArea([.top,.bottom]).onTapGesture {
+        }.background(Image( "170622kategorie-party-und-events-header_mini").resizable().scaledToFill().opacity(animate ? 0.0 : 1.0).animation(.easeInOut(duration: 1.6))).edgesIgnoringSafeArea([.top,.bottom]).onTapGesture {
                 self.animate = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                self.isLoadingScreenShown = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    self.isLoadingScreenShown = false
             }
             
         }

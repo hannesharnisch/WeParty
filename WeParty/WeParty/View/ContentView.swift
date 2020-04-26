@@ -16,10 +16,7 @@ struct ContentView: View {
     @State var model:WePartyModel?
     @State var showMusikPlaying:CGFloat = 0
     var body: some View {
-        Group{
-            if isloadingScreenShown{
-                LoadingScreen(isLoadingScreenShown: $isloadingScreenShown)
-            }else{
+        ZStack{
                 TabView(selection: $selectedView){
                     ConnectionView(model: model?.connection).tabItem {
                         Image(systemName: "antenna.radiowaves.left.and.right")
@@ -28,7 +25,7 @@ struct ContentView: View {
                     if self.state.connectedPeers.count != 0 || self.state.isServer{
                         SendingView(connectivity: self.model, selectMusik: self.$state.showMusicPicker).tabItem {
                             Image(systemName: "music.house")
-                            Text("Music").onAppear {
+                            Text(NSLocalizedString("music", comment:"music word")).onAppear {
                                 if !self.state.isServer {
                                     self.selectedView = 1
                                 }
@@ -45,9 +42,16 @@ struct ContentView: View {
                     }.tag(2).navigationViewStyle(StackNavigationViewStyle())
                 }.onAppear {
                     self.model = WePartyModel(state:self.state)
-                    AppSettings.current.requestMusicCapabilities(){result in
-                        
-                    }
+                }
+            if isloadingScreenShown{
+                LoadingScreen(isLoadingScreenShown: $isloadingScreenShown).onDisappear {
+                        AppSettings.current.requestMusicCapabilities(){ result in
+                            if !result{
+                                AppSettings.current.requestMediaLibraryAccess { (success) in
+                                    print("Success Connect: \(success)")
+                                }
+                            }
+                        }
                 }
             }
         }.alert(isPresented: $state.showAlertView) {
