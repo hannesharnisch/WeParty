@@ -26,20 +26,54 @@ class WePartyModel:NSObject, PartyCollaborateMCConnectionDelegate{
         self.connection.delegate = self
         self.musicPlayer.delegate = self
     }
-    func songsRecieved(songs: [Song]) {
+    func songsRecieved(songs: [RecievedSong]) {
         for song in songs{
             if song.appleMusicSongID != nil{
-                self.addToQueue(songs: [song], from: false)
+                song.acceptFunc = { song in
+                    self.songLoadingQueue.async {
+                        self.addToQueue(songs: [song], from: false)
+                    }
+                    self.state.recievedSongs.removeAll { (recieved) -> Bool in
+                        return recieved == song
+                    }
+                }
+                song.declineFunc = { song in
+                    self.state.recievedSongs.removeAll { (recieved) -> Bool in
+                        return recieved == song
+                    }
+                }
+                self.state.recievedSongs.insert(song, at: 0)
+                if !AppSettings.current.hasPremium{
+                    song.accept()
+                }
             }else{
                 musicFinder.findSong(song: song) { (result) in
                     switch result{
-                    case .success(let song):
-                        self.addToQueue(songs: [song],from:false)
+                    case .success(let ps):
+                        let recievedSong = RecievedSong(song: ps, sender: song.sender!)
+                        recievedSong.acceptFunc = { song in
+                            self.songLoadingQueue.async {
+                                self.addToQueue(songs: [song], from: false)
+                            }
+                            self.state.recievedSongs.removeAll { (recieved) -> Bool in
+                                return recieved == song
+                            }
+                        }
+                        recievedSong.declineFunc = { song in
+                            self.state.recievedSongs.removeAll { (recieved) -> Bool in
+                                return recieved == song
+                            }
+                        }
+                        self.state.recievedSongs.insert(song, at: 0)
+                        if !AppSettings.current.hasPremium{
+                            recievedSong.accept()
+                        }
                     case .failure(let err):
                         print(err)
                     }
                 }
             }
+            
         }
     }
     func removeFromQueue(song:Song){
@@ -196,6 +230,7 @@ extension WePartyModel:MusicPlayerActionEnabled, MusicPlayerDelegate{
     }
     
     func queueDidChange(queue: [Song], type: QueueChangeType) {
+        print(queue)
         if connection.hasStarted{
         DispatchQueue.main.async {
             switch type{

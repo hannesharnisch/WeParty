@@ -11,7 +11,8 @@ import MultipeerConnectivity
 class MCHost:NSObject,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate{
     var mcSession:MCSession!
     var mcAdvertiserAssistent:MCNearbyServiceAdvertiser!;
-    let me = MCPeerID(displayName: UIDevice.current.name)
+    var me = MCPeerID(displayName: UIDevice.current.name)
+    var name = ""
     var delegate:MCHostDelegate!
     var SERVICE_TYPE:String
     
@@ -40,8 +41,10 @@ class MCHost:NSObject,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate{
         self.mcSession.disconnect()
         self.mcSession = nil
     }
-    func start(){
+    func start(name:String){
         print("START HOST")
+        self.name = name
+        self.me = MCPeerID(displayName: "\(name)-\(UIDevice.current.name)")
         mcSession = MCSession(peer: self.me, securityIdentity: nil, encryptionPreference: .required);
         mcSession.delegate = self;
         self.mcAdvertiserAssistent = MCNearbyServiceAdvertiser(peer: self.me, discoveryInfo: nil, serviceType: self.SERVICE_TYPE)

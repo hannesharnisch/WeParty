@@ -91,6 +91,12 @@
 		D1909064244B10F800C57B0B /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909063244B10F800C57B0B /* SearchBar.swift */; };
 		D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1909067244B8B2800C57B0B /* AppSettings.swift */; };
 		D190906B244B99FC00C57B0B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D190906A244B99FC00C57B0B /* Settings.swift */; };
+		D1A8ED282455A9AD00FF3E77 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8ED272455A9AD00FF3E77 /* NameInputView.swift */; };
+		D1C251372455CBD7008F31D4 /* StartUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C251362455CBD7008F31D4 /* StartUpView.swift */; };
+		D1C251392455E150008F31D4 /* IntroductionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C251382455E150008F31D4 /* IntroductionView.swift */; };
+		D1C2513B2455E4FF008F31D4 /* ExplainationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C2513A2455E4FF008F31D4 /* ExplainationView.swift */; };
+		D1C2513E2456F9E7008F31D4 /* RecievedSongsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C2513D2456F9E7008F31D4 /* RecievedSongsView.swift */; };
+		D1C251402456FA5C008F31D4 /* RecievedSongSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C2513F2456FA5C008F31D4 /* RecievedSongSheet.swift */; };
 		D1ED4A5A244F040B0090C7E8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D1ED4A5C244F040B0090C7E8 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
@@ -160,6 +166,12 @@
 		D1909067244B8B2800C57B0B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		D1909069244B8CB800C57B0B /* WeParty.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeParty.entitlements; sourceTree = "<group>"; };
 		D190906A244B99FC00C57B0B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		D1A8ED272455A9AD00FF3E77 /* NameInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameInputView.swift; sourceTree = "<group>"; };
+		D1C251362455CBD7008F31D4 /* StartUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartUpView.swift; sourceTree = "<group>"; };
+		D1C251382455E150008F31D4 /* IntroductionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroductionView.swift; sourceTree = "<group>"; };
+		D1C2513A2455E4FF008F31D4 /* ExplainationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplainationView.swift; sourceTree = "<group>"; };
+		D1C2513D2456F9E7008F31D4 /* RecievedSongsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecievedSongsView.swift; sourceTree = "<group>"; };
+		D1C2513F2456FA5C008F31D4 /* RecievedSongSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecievedSongSheet.swift; sourceTree = "<group>"; };
 		D1ED4A59244F02D20090C7E8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		D1ED4A5B244F040B0090C7E8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D1ED4A5D244F04120090C7E8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -258,6 +270,8 @@
 		D13D0DB62444CC9C0035A0B2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D1C2513C2456F97D008F31D4 /* HostAcceptSongs */,
+				D1C251352455CBC2008F31D4 /* Startup */,
 				D14B1D72245201ED00D90EAA /* Help */,
 				D190906C244B9A4A00C57B0B /* Settings */,
 				D13D0DEA24450E380035A0B2 /* NowPlayingView */,
@@ -362,8 +376,28 @@
 			isa = PBXGroup;
 			children = (
 				D190906A244B99FC00C57B0B /* Settings.swift */,
+				D1A8ED272455A9AD00FF3E77 /* NameInputView.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		D1C251352455CBC2008F31D4 /* Startup */ = {
+			isa = PBXGroup;
+			children = (
+				D1C251362455CBD7008F31D4 /* StartUpView.swift */,
+				D1C251382455E150008F31D4 /* IntroductionView.swift */,
+				D1C2513A2455E4FF008F31D4 /* ExplainationView.swift */,
+			);
+			path = Startup;
+			sourceTree = "<group>";
+		};
+		D1C2513C2456F97D008F31D4 /* HostAcceptSongs */ = {
+			isa = PBXGroup;
+			children = (
+				D1C2513D2456F9E7008F31D4 /* RecievedSongsView.swift */,
+				D1C2513F2456FA5C008F31D4 /* RecievedSongSheet.swift */,
+			);
+			path = HostAcceptSongs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -510,18 +544,23 @@
 				D13D0DD82444FEE10035A0B2 /* Song.swift in Sources */,
 				D13D0DE124450CC00035A0B2 /* InputSongView.swift in Sources */,
 				D13D0DF324450E380035A0B2 /* SongImageView.swift in Sources */,
+				D1C251372455CBD7008F31D4 /* StartUpView.swift in Sources */,
 				D14B1D772454948100D90EAA /* AskingViewHelp.swift in Sources */,
 				D13D0E0824451F2A0035A0B2 /* AppleMusicLibrary.swift in Sources */,
 				D14B1D71245201E600D90EAA /* HelpView.swift in Sources */,
 				D13D0E0B24451F2A0035A0B2 /* MusicFinder.swift in Sources */,
 				D13D0E142445BB170035A0B2 /* AskingView.swift in Sources */,
+				D1C251392455E150008F31D4 /* IntroductionView.swift in Sources */,
 				D13D0DCD2444DD890035A0B2 /* MCConnection.swift in Sources */,
 				D13D0DB32444CC970035A0B2 /* LoadingScreen.swift in Sources */,
 				D13D0DE724450CC00035A0B2 /* SendingView.swift in Sources */,
+				D1C2513E2456F9E7008F31D4 /* RecievedSongsView.swift in Sources */,
 				D13D0DBA2444CD0F0035A0B2 /* ConnectionView.swift in Sources */,
 				D13D0D832444CC630035A0B2 /* AppDelegate.swift in Sources */,
 				D1909062244B0F8300C57B0B /* SearchForSongView.swift in Sources */,
+				D1C251402456FA5C008F31D4 /* RecievedSongSheet.swift in Sources */,
 				D13D0DF924450E380035A0B2 /* MusikSlider.swift in Sources */,
+				D1C2513B2455E4FF008F31D4 /* ExplainationView.swift in Sources */,
 				D14B1D7B2454B50100D90EAA /* ConnectingView.swift in Sources */,
 				D13D0DC32444D9640035A0B2 /* WePartyModel.swift in Sources */,
 				D13D0DF624450E380035A0B2 /* DraggableSmallRepresentationView.swift in Sources */,
@@ -532,6 +571,7 @@
 				D13D0DFC24450E380035A0B2 /* NowPlayingView.swift in Sources */,
 				D14B1D742452BC3B00D90EAA /* MPVolumeViewRepresentable.swift in Sources */,
 				D1909068244B8B2800C57B0B /* AppSettings.swift in Sources */,
+				D1A8ED282455A9AD00FF3E77 /* NameInputView.swift in Sources */,
 				D1909064244B10F800C57B0B /* SearchBar.swift in Sources */,
 				D13D0DCA2444DD890035A0B2 /* MCHost.swift in Sources */,
 				D190906B244B99FC00C57B0B /* Settings.swift in Sources */,

@@ -11,6 +11,7 @@ import SwiftUI
 struct QueueView: View {
     @EnvironmentObject var state:WePartyState
     @State var percentage:CGFloat = 0.0
+    @ObservedObject var settings = AppSettings.current
     var connectivity:WePartyModel?
     var body: some View {
         VStack(alignment: .leading){
@@ -29,6 +30,9 @@ struct QueueView: View {
                     VStack(alignment: .leading){
                         Text(song.title)
                         Text(song.interpret)
+                        if song.sender != nil && self.settings.hasPremium{
+                            Text("From: \(String(song.sender!.split(separator: "-")[0]))").font(.footnote)
+                        }
                     }
                 }.padding(2)
             }.frame(width:UIScreen.main.bounds.width)

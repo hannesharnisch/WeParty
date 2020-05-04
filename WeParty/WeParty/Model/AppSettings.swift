@@ -11,27 +11,41 @@ import StoreKit
 import Network
 import MediaPlayer
 
-class AppSettings{
+class AppSettings:ObservableObject{
     public static var current = AppSettings()
-    var hasMusicInLib = false
-    var hasAppleMusic = false
-    let monitor = NWPathMonitor()
-    var hasInternetConnection = false
+    @Published var hasMusicInLib = false
+    @Published var hasAppleMusic = false
+    @Published var hasInternetConnection = false
+    @Published var name = ""
+    @Published var hasPremium = true
+    private let monitor = NWPathMonitor()
     var musicQueueingMode:QueueMode = .append
     private init(){
         self.requestMusicCapabilities(){ result in }
         monitor.pathUpdateHandler = self.pathUpdateHandler(path:)
         let queue = DispatchQueue(label: "Monitor")
         monitor.start(queue: queue)
+        let settings = Storage.restoreOldAppSettings(settings: self)
+        self.name = settings.name
+        print(name)
+        self.musicQueueingMode = settings.musicQueueingMode
+        print(musicQueueingMode)
+    }
+    func saveSettings(){
+        Storage.storeAppSettings(settings: self)
+        print("Saved")
     }
     deinit {
+        self.saveSettings()
         monitor.cancel()
     }
     private func pathUpdateHandler(path:NWPath){
-        if path.status == .satisfied{
-            hasInternetConnection = true
-        }else{
-            hasInternetConnection = false
+        DispatchQueue.main.async {
+            if path.status == .satisfied{
+                self.hasInternetConnection = true
+            }else{
+                self.hasInternetConnection = false
+            }
         }
     }
     func requestMusicCapabilities(callback:@escaping (Bool) -> Void){
@@ -75,4 +89,26 @@ class AppSettings{
 
 enum QueueMode:String,CaseIterable{
     case append = "append",prepend = "prepend",appendHostPrepend = "Only party-host prepend",prependHostAppend = "Only party-host append"
+}
+class Storage{
+    private static let store = UserDefaults.standard
+    static func storeAppSettings(settings:AppSettings){
+        let index = QueueMode.allCases.index(of: settings.musicQueueingMode)
+        store.set(index, forKey: "QueueingType")
+        store.set(settings.name, forKey: "Displayname")
+        print("saving")
+    }
+    static func restoreOldAppSettings(settings:AppSettings) -> AppSettings{
+        settings.name = store.string(forKey: "Displayname") ?? ""
+        let index = store.integer(forKey: "QueueingType") ?? 0
+        settings.musicQueueingMode = QueueMode.allCases[index]
+        return settings
+    }
+    static func hasAlreadyBeenOpened() -> Bool{
+        let wasopened = store.bool(forKey: "opened")
+        return wasopened
+    }
+    static func wasOpened(){
+        store.set(true, forKey: "opened")
+    }
 }

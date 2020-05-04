@@ -59,6 +59,10 @@ struct SearchForSongView<T:SearchForSongsDelegate>: View {
                     self.searchResults.append(contentsOf: songs ?? [])
                 }
             })
+            if searchResults.count == 0{
+                Spacer()
+                Text("Search for a Song in Apple Music").font(.largeTitle).multilineTextAlignment(.center).padding().foregroundColor(.gray)
+            }
             List(self.searchResults,id: \.self, selection: $selectKeeper){ song in
                 HStack{
                     SongImageView(percentage: self.$percentage, songImage: song.getImage())

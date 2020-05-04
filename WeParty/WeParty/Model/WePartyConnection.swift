@@ -30,9 +30,9 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
                 
             }
             if isServer{
-                self.host.start()
+                self.host.start(name:AppSettings.current.name)
             }else{
-                self.client.start()
+                self.client.start(name:AppSettings.current.name)
             }
             print("HAS STARTED")
             self.hasStarted = true
@@ -65,10 +65,10 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
         connectionQueue.async {
             if self.state.isServer{
                 self.host.stop()
-                self.host.start()
+                self.host.start(name:AppSettings.current.name)
             }else{
                 self.client.stop()
-                self.client.start()
+                self.client.start(name:AppSettings.current.name)
             }
         }
     }
@@ -118,10 +118,14 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             switch content {
             case .song(let song):
                 print("SOng recieved")
-                self.delegate.songsRecieved(songs: [song])
+                self.delegate.songsRecieved(songs: [RecievedSong(song: song, sender: from.displayName)])
             case .queue(let songs):
                 print("SOngs recieved")
-                self.delegate.songsRecieved(songs: songs)
+                var recieved:[RecievedSong] = []
+                for song in songs{
+                    recieved.append(RecievedSong(song: song, sender: from.displayName))
+                }
+                self.delegate.songsRecieved(songs: recieved)
             default:
                 return
             }
@@ -152,6 +156,8 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
             case .previous(let song):
                 self.state.queue.removeLast()
                 self.state.queue.insert(song, at: 0)
+            case .message(let text):
+                return
                 }
             }
         }
@@ -187,7 +193,7 @@ class WePartyConnection:NSObject,ConnectivityEnabled,MCHostDelegate,MCClientDele
     }
 }
 protocol PartyCollaborateMCConnectionDelegate {
-    func songsRecieved(songs:[Song])
+    func songsRecieved(songs:[RecievedSong])
 }
 
 enum MCSongContent:Decodable{
@@ -196,6 +202,7 @@ enum MCSongContent:Decodable{
     case next(song:Song)
     case previous(song:Song)
     case isPlaying(playing:Bool)
+    case message(text:String)
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let value = try? container.decode(MCTupelObject.self){
@@ -211,8 +218,10 @@ enum MCSongContent:Decodable{
             default:
                 throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
             }
-        }else if let value = try? container.decode(Bool.self){
-            self = .isPlaying(playing: value)
+        }else if let value1 = try? container.decode(Bool.self){
+            self = .isPlaying(playing: value1)
+        }else if let value2 = try? container.decode(String.self){
+            self = .message(text: value2)
         }else{
             throw DecodingError.typeMismatch(MCSongContent.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a SongContent"))
         }
@@ -233,10 +242,12 @@ enum MCSongContent:Decodable{
         case .previous(let song):
             let tupel = MCTupelObject(type: "previous", songs: [song])
             return try! JSONEncoder().encode(tupel)
+        case .message(let text):
+            return try! JSONEncoder().encode(text)
         }
     }
 }
-struct MCTupelObject:Decodable,Encodable{
+struct MCTupelObject<S:Song>:Decodable,Encodable{
     var type:String
-    var songs:[Song]
+    var songs:[S]
 }

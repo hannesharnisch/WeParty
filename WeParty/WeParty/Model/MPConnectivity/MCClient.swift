@@ -15,7 +15,8 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
     var mcBrowser:MCNearbyServiceBrowser!
     var delegate:MCClientDelegate!
     var currentHost:MCPeerID!
-    let me = MCPeerID(displayName: UIDevice.current.name)
+    var me = MCPeerID(displayName: UIDevice.current.name)
+    var name = ""
     var SERVICE_TYPE:String
     var connections = [MCConnection](){
         didSet{
@@ -58,9 +59,11 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
         }
         self.stop()
     }
-    func start(){
+    func start(name:String){
+        self.name = name
         isRunning = true
         print("STARTING CLIENT")
+        self.me = MCPeerID(displayName: "\(name)-\(UIDevice.current.name)")
         mcSession = MCSession(peer: self.me, securityIdentity: nil, encryptionPreference: .required);
         mcSession.delegate = self
         mcBrowser = MCNearbyServiceBrowser(peer: self.me, serviceType: SERVICE_TYPE)
@@ -80,7 +83,7 @@ class MCClient:NSObject,MCSessionDelegate,MCNearbyServiceBrowserDelegate{
     }
     func reset(){
         self.stop()
-        self.start()
+        self.start(name: name)
     }
     func invite(peer:String)->Bool{
         let peers = discoveredPeers.filter { (discovered) -> Bool in

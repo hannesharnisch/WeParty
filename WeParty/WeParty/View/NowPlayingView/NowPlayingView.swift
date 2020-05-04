@@ -19,11 +19,12 @@ struct NowPlayingInfoView<T:MusicPlayerActionEnabled>: View {
     @Binding var enabled:Bool
     @Binding var playing:Bool
     var body: some View {
+        GeometryReader{ geometry in
         VStack{
         Spacer()
         ZStack{
-            DraggableSmallRepresentationView(percentage: $showMusikPlaying, smallContent: {
-                MusicControlSmall(playing: self.$playing, nowPlaying: $nowPlaying, enabled: $enabled, onPlayPause: { (play) in
+            DraggableSmallRepresentationView(percentage: self.$showMusikPlaying, smallContent: {
+                MusicControlSmall(playing: self.$playing, nowPlaying: self.$nowPlaying, enabled: self.$enabled, onPlayPause: { (play) in
                     if play{
                         self.controller?.toggleAction(action: .play)
                     }else{
@@ -36,7 +37,7 @@ struct NowPlayingInfoView<T:MusicPlayerActionEnabled>: View {
                 }
             }, largeContent: {
                 VStack{
-                MusicControlLarge(playing: self.$playing, nowPlaying: $nowPlaying,current: $current,total: $total, enabled: $enabled, onPlayPause: { (play) in
+                    MusicControlLarge(playing: self.$playing, nowPlaying: self.$nowPlaying,current: self.$current,total: self.$total, enabled: self.$enabled, onPlayPause: { (play) in
                    if play{
                     self.controller?.toggleAction(action: .play)
                     }else{
@@ -57,10 +58,11 @@ struct NowPlayingInfoView<T:MusicPlayerActionEnabled>: View {
             }) {
                 VStack{
                     Spacer()
-                    SongImageView(percentage: $showMusikPlaying, songImage: self.nowPlaying?.getImage())
+                    SongImageView(percentage: self.$showMusikPlaying, songImage: self.nowPlaying?.getImage())
                     Spacer()
                 }
-            }
+            }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .bottom)
+        }
         }
         }
     }
@@ -73,7 +75,7 @@ struct NowPlayingInfoView_Preview: PreviewProvider {
                     Text("Hallo")
                     .navigationBarTitle(Text("TITLE"))
                 }
-                NowPlayingInfoView(showMusikPlaying: .constant(100),controller: WePartyModel(state: WePartyState()), nowPlaying: .constant(Song(title: "Halkld", interpret: "haldo")), current: .constant(5), total: .constant(40), enabled: .constant(true), playing: .constant(true))
+                NowPlayingInfoView(showMusikPlaying: .constant(0),controller: WePartyModel(state: WePartyState()), nowPlaying: .constant(Song(title: "Halkld", interpret: "haldo")), current: .constant(5), total: .constant(40), enabled: .constant(true), playing: .constant(true))
             }
         }
     }

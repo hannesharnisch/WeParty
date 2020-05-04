@@ -22,7 +22,8 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
     }
     var body: some View {
         VStack(alignment: .center){
-            if percentage != 0{
+            Spacer()
+            if self.percentage != 0{
                 HStack{
                     Spacer()
                     Image(systemName: "minus").resizable().foregroundColor(Color(UIColor.lightGray)).frame(width:40,height:6).padding([.bottom,.horizontal],20).padding(.top, 3)
@@ -31,7 +32,7 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                         self.percentage = 0
                 }.gesture(
                     DragGesture()
-                    .updating($dragOffset, body: { (value, state, transaction) in
+                        .updating(self.$dragOffset, body: { (value, state, transaction) in
                         state = value.translation
                     })
                     .onEnded({ value in
@@ -44,13 +45,13 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                     Spacer()
             }
             HStack(alignment:.center){
-                content
-                if percentage == 0{
-                    smallContent
+                self.content
+                if self.percentage == 0{
+                    self.smallContent
                 }
             }.padding(.bottom, 3).padding(.horizontal, 5).padding(.top, 6).gesture(
                 DragGesture()
-                .updating($dragOffset, body: { (value, state, transaction) in
+                    .updating(self.$dragOffset, body: { (value, state, transaction) in
                     state = value.translation
                 })
                 .onEnded({ value in
@@ -64,18 +65,18 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
                     self.percentage = 100
                 }
             }
-            if percentage != 0{
+            if self.percentage != 0{
                 Spacer()
-                largeContent
+                self.largeContent.padding(.bottom,25)
             }
             Spacer()
-        }.padding(6).frame(width: UIScreen.main.bounds.width,height: (75 + (((percentage/100) * (UIScreen.main.bounds.height - 180)) - CGFloat(self.dragOffset.height)))).background(Blur().onTapGesture {
+        }.padding(6).frame(maxWidth: UIScreen.main.bounds.width).frame(height: (75 + (((self.percentage/100) * (UIScreen.main.bounds.height - 180)) - CGFloat(self.dragOffset.height)))).background(Blur().onTapGesture {
             if self.percentage == 0{
                 self.percentage = 100
             }
         }.gesture(
             DragGesture()
-            .updating($dragOffset, body: { (value, state, transaction) in
+                .updating(self.$dragOffset, body: { (value, state, transaction) in
                 state = value.translation
             })
             .onEnded({ value in
@@ -84,6 +85,6 @@ struct DraggableSmallRepresentationView<T:View,L:View,S:View>: View {
             }else{
                 self.percentage = 100
             }
-        }))).cornerRadius(self.percentage != 0 ? 20 : 0).shadow(radius: 10).animation(.linear)
+        }))).cornerRadius(self.percentage != 0 ? 20 : 0).offset(y: self.percentage == 0 ? 0 : 20).shadow(radius: 10).animation(.linear)
     }
 }

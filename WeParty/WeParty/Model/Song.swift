@@ -9,9 +9,11 @@
 import Foundation
 import SwiftUI
 import MediaPlayer
+import MultipeerConnectivity
 
 class Song:Codable,Identifiable{
     var id = UUID()
+    var sender:String?
     var title:String
     var interpret:String
     var appleMusicSongID:String?
@@ -36,7 +38,6 @@ class Song:Codable,Identifiable{
             print("NO TITLE")
             return nil
         }
-        print(self.appleMusicSongID)
     }
     init(title:String,interpret:String,id:String,image:URL){
         self.title = title
@@ -82,4 +83,36 @@ extension Song:Hashable,Equatable{
         hasher.combine(appleMusicSongID)
     }
 
+}
+
+class RecievedSong: Song{
+    var status:RecievedSongStatus
+    var acceptFunc:((Song)->Void)!
+    var declineFunc:((Song)->Void)!
+    init(song:Song,sender:String){
+        self.status = .recieved
+        super.init(title: song.title, interpret: song.interpret)
+        self.sender = sender
+        self.appleMusicSongID = song.appleMusicSongID
+        self.image = song.image
+        self.imageURL = song.imageURL
+        self.length = song.length
+        
+    }
+    func accept(){
+        DispatchQueue.main.async {
+            self.acceptFunc(self)
+        }
+    }
+    func decline(){
+        DispatchQueue.main.async {
+            self.declineFunc(self)
+        }
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+}
+enum RecievedSongStatus{
+    case recieved, accepted, declined, removed
 }

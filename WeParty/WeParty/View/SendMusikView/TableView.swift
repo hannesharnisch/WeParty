@@ -27,7 +27,8 @@ struct TableView<T:View,S:Identifiable>: View {
             if self.deleteOption{
                     ForEach(self.list,id: \.id){ item in
                         self.content(item)
-                    }.onMove(perform: move).onDelete(perform: deleteRow(at:))
+                    }.onDelete(perform: deleteRow(at:))
+                //.onMove(perform: move)
             }else{
                     ForEach(self.list,id: \.id){ item in
                         self.content(item)

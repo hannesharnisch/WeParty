@@ -12,12 +12,20 @@ struct Settings: View {
     @EnvironmentObject var state:WePartyState
     @State var alertShown = false
     @State var alertText = ""
+    @State var showNameInput = false
+    @ObservedObject var settings = AppSettings.current
     @State var selection = Int(QueueMode.allCases.firstIndex(of: AppSettings.current.musicQueueingMode)!)
     var body: some View {
         NavigationView{
             List{
-                SettingsInfoBitView(text:"Connected to the Internet",wert: AppSettings.current.hasInternetConnection){
+                HStack{
+                    Text("Displayname:")
+                    Spacer()
+                    Text(self.settings.name != "" ? self.settings.name:"No name specified")
+                    Image(systemName:"arrowtriangle.right.circle")
                     
+                }.padding(.horizontal).onTapGesture {
+                    self.showNameInput = true
                 }
                 if self.state.isServer{
                     ExtendablePicker(text:"Music queueing type",data:{
@@ -27,12 +35,15 @@ struct Settings: View {
                         }
                         return data
                     }(), selection: $selection){ selection in
-                        AppSettings.current.musicQueueingMode = QueueMode.init(rawValue: selection)!
+                        self.settings.musicQueueingMode = QueueMode.init(rawValue: selection)!
                     }
                 }
+                SettingsInfoBitView(text:"Connected to the Internet",wert: settings.hasInternetConnection){
+                    
+                }
                 //Divider()
-                SettingsInfoBitView(text:"Connected to Music Library",wert: AppSettings.current.hasMusicInLib){
-                    AppSettings.current.requestMediaLibraryAccess(){ success in
+                SettingsInfoBitView(text:"Connected to Music Library",wert: settings.hasMusicInLib){
+                    self.settings.requestMediaLibraryAccess(){ success in
                         if !success{
                             self.alertText = "No Connnection to Music Library possible"
                             self.alertShown = true
@@ -40,19 +51,28 @@ struct Settings: View {
                     }
                 }
                 //Divider()
-                SettingsInfoBitView(text:"Connected to Apple Music",wert:AppSettings.current.hasAppleMusic){
-                    AppSettings.current.requestMusicCapabilities(){ success in
+                SettingsInfoBitView(text:"Connected to Apple Music",wert:settings.hasAppleMusic){
+                    self.settings.requestMusicCapabilities(){ success in
                         if !success{
                             self.alertText = "No Connnection to Apple Music possible"
                             self.alertShown = true
                         }
                     }
                 }
+                Toggle(isOn: $settings.hasPremium) {
+                    Text("Premium")
+                }.padding(.horizontal)
                 //Spacer()
+            }.sheet(isPresented: $showNameInput, onDismiss: {
+                AppSettings.current.name = self.settings.name
+            }){
+                NameInputView(name:self.$settings.name, shown: self.$showNameInput)
             }
                 .navigationBarTitle(Text("Settings"))
         }.alert(isPresented: $alertShown) {
             Alert(title: Text("Failed to Connect"), message: Text(alertText), dismissButton: .default(Text("ok")))
+        }.onDisappear {
+            AppSettings.current.saveSettings()
         }
     }
 }
@@ -80,7 +100,7 @@ struct ExtendablePicker:View{
                 }
             }
         }
-        }.padding().onDisappear {
+        }.padding(.horizontal).onDisappear {
             self.action(self.data[self.selection])
         }
     }

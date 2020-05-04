@@ -16,6 +16,7 @@ class WePartyState:ObservableObject{
     @Published var discoveredPeers:[MCPeerID] = []
     @Published var connectedPeers:[MCPeerID] = []
     @Published var queue:[Song] = []
+    @Published var recievedSongs:[RecievedSong] = []//[RecievedSong(song: Song(title: "hallo", interpret: "Hallo"), sender: .init(displayName: "Hannes")),RecievedSong(song: Song(title: "hallo", interpret: "Hallo"), sender: .init(displayName: "Hannes")),RecievedSong(song: Song(title: "hallo", interpret: "Hallo"), sender: .init(displayName: "Hannes")),RecievedSong(song: Song(title: "hallo", interpret: "Hallo"), sender: .init(displayName: "Hannes"))]
     @Published var nowPlaying:Song?
     @Published var currentPosition:CGFloat = 0.0
     @Published var endPostition:CGFloat = 0.0

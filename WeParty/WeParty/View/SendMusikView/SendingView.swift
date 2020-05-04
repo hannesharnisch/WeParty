@@ -16,7 +16,8 @@ struct SendingView: View {
     @State private var editMode = EditMode.inactive
     
     var body: some View {
-        ZStack{
+        GeometryReader{ geometry in
+        ZStack(alignment: .bottom){
             NavigationView{
                 VStack{
                     if self.state.queue.count == 0 && self.state.isServer{
@@ -26,7 +27,7 @@ struct SendingView: View {
                         Text(NSLocalizedString("selectMusic", comment:"select Music button")).padding()
                     }
                 }
-                QueueView(connectivity:connectivity).sheet(isPresented: self.$selectMusik, onDismiss: {
+                    QueueView(connectivity:self.connectivity).sheet(isPresented: self.$selectMusik, onDismiss: {
                     DispatchQueue.main.async {
                         self.state.closedMusicPicker()
                     }
@@ -43,16 +44,18 @@ struct SendingView: View {
                         }
                     }
                 }
-                }.navigationBarTitle(Text("\(self.state.currentHost?.displayName ?? NSLocalizedString("my", comment:"My word")) \(NSLocalizedString("music", comment:"music word"))")).navigationBarItems(leading: self.state.isServer ? EditButton() : nil,trailing:
+                }.navigationBarTitle(Text("\((String(self.state.currentHost?.displayName.split(separator: "-")[0] ?? Substring(NSLocalizedString("my", comment:"My word"))))) \(NSLocalizedString("music", comment:"music word"))")).navigationBarItems(leading: self.state.isServer ? EditButton() : nil,trailing:
                     Button(action: {
                         self.selectMusik.toggle()
                     }) {
                         Image(systemName: "rectangle.stack.fill.badge.plus").resizable().frame(width: 30, height: 30, alignment: .trailing)
                     }.disabled(self.state.queue.count == 0 && !self.state.isServer)
                 )
-                .environment(\.editMode, $editMode)
+                    .environment(\.editMode, self.$editMode)
             }
-            NowPlayingInfoView(showMusikPlaying: self.$showMusikPlaying , controller: self.connectivity, nowPlaying: $state.nowPlaying,current: $state.currentPosition,total: $state.endPostition, enabled: $state.isServer, playing: $state.playing)
+            
+            NowPlayingInfoView(showMusikPlaying: self.$showMusikPlaying , controller: self.connectivity, nowPlaying: self.$state.nowPlaying,current: self.$state.currentPosition,total: self.$state.endPostition, enabled: self.$state.isServer, playing: self.$state.playing).frame(width: geometry.size.width, height: geometry.size.height, alignment: .bottom)
+        }
         }
     }
 }

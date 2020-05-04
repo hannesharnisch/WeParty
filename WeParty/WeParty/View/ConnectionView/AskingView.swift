@@ -48,17 +48,6 @@ struct AskingView: View{
             Spacer()
             }
             Spacer()
-            HStack{
-                Button(action:{
-                    self.showHelp.toggle()
-                }){
-                    Image(systemName:"questionmark.circle")
-                }
-                Spacer()
-            }
-        }.padding().sheet(isPresented: self.$showHelp,onDismiss:{
-        }){
-            HelpView(selected: 0)
-        }
+        }.padding()
     }
 }

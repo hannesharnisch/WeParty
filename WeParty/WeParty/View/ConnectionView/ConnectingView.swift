@@ -32,7 +32,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
             Divider()
             if self.connectedPeers.count != 0 && !self.isServer{
                 Text("Partyhost:").font(.caption).padding(.horizontal)
-                Text("\(self.currentHost?.displayName ?? "")").padding()
+                Text("\(self.currentHost?.displayName  ?? "")").padding()
                 Divider()
             }
             if self.connectedPeers.count != 0{
@@ -41,7 +41,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                     VStack(alignment:.leading){
                         Divider()
                         HStack{
-                            Text(peer.displayName).padding(.horizontal)
+                            Text(peer.displayName.split(separator: "-")[0]).padding(.horizontal)
                             Spacer()
                             if self.isServer{
                                 Button(action:{
@@ -62,7 +62,7 @@ struct ConnectingView<T:ConnectivityEnabled>: View {
                         VStack(alignment:.leading){
                             Divider()
                             HStack{
-                                Text(peer.displayName)
+                                Text(peer.displayName.split(separator: "-")[0])
                                 Spacer()
                                     Button(action:{
                                         self.connectivity?.connectTo(peer: peer)
